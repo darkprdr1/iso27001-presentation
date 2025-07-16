@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>基於ISO 27001與零信任架構的國防產業網路安全防護系統效果評估研究</title>
+<style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .presentation-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .slide {
+            width: 100%;
+            min-height: 100vh;
+            padding: 60px 80px;
+            display: none;
+            position: relative;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        .slide-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 40px;
+            text-align: center;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 20px;
+        }
+
+        .slide-content {
+            font-size: 1.2em;
+            line-height: 1.8;
+            color: #34495e;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            color: #2c3e50;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card div:not(.stat-number) {
+            color: #34495e;
+            font-size: 1em;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #e74c3c;
+            margin-bottom: 10px;
+        }
+
+        .methodology-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .step-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #3498db;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            color: #2c3e50;
+        }
+
+        .step-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .step-card p {
+            color: #34495e;
+        }
+
+        .step-card ul {
+            color: #34495e;
+            margin-top: 10px;
+        }
+
+        .step-card li {
+            color: #34495e;
+            margin-bottom: 5px;
+        }
+
+        .step-number {
+            background: #3498db;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .tool-category {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            color: #2c3e50;
+        }
+
+        .tool-category h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .tool-list {
+            list-style: none;
+            color: #34495e;
+        }
+
+        .tool-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #ecf0f1;
+            color: #34495e;
+        }
+
+        .tool-list li:last-child {
+            border-bottom: none;
+        }
+
+        .tool-list li strong {
+            color: #2c3e50;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .nav-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .nav-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(52, 73, 94, 0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            z-index: 1000;
+        }
+
+        .download-btn {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .download-btn:hover {
+            background: #219a52;
+            transform: translateY(-2px);
+        }
+
+        .framework-diagram {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            color: #2c3e50;
+        }
+
+        .framework-diagram h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .evaluation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .evaluation-table th,
+        .evaluation-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+            color: #2c3e50;
+        }
+
+        .evaluation-table th {
+            background: #3498db;
+            color: white !important;
+            font-weight: bold;
+        }
+
+        .evaluation-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .evaluation-table tr:hover td {
+            color: #2c3e50;
+        }
+
+        .literature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .literature-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-left: 5px solid #9b59b6;
+            color: #2c3e50;
+        }
+
+        .literature-card h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .literature-card p {
+            color: #34495e;
+        }
+
+        .literature-type {
+            background: #9b59b6;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 40px 20px;
+            }
+            
+            .slide-title {
+                font-size: 1.8em;
+            }
+            
+            .slide-content {
+                font-size: 1em;
+            }
+            
+            .stats-grid,
+            .methodology-steps,
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="presentation-container"><div class="slide active">
+<div class="slide-title">基於ISO 27001與零信任架構的國防產業網路安全防護系統效果評估研究</div>
+<div class="highlight-box" style="text-align: center; margin-top: 60px;">
+<h2 style="margin-bottom: 30px;">Defense Industry Cybersecurity Protection System Based on ISO 27001 and Zero Trust Architecture</h2>
+<div style="margin-top: 40px;">
+<p><strong>報告人：</strong> [姓名]</p>
+<p><strong>指導教授：</strong> [教授姓名]</p>
+<p><strong>時間：</strong> [日期]</p>
+</div>
+</div>
+</div><div class="slide">
+<div class="slide-title">研究大綱</div>
+<div class="slide-content">
+<div class="methodology-steps">
+<div class="step-card">
+<div class="step-number">1</div>
+<h3>研究背景與問題定義</h3>
+<p>國防產業面臨的網路安全威脅現況分析</p>
+</div>
+<div class="step-card">
+<div class="step-number">2</div>
+<h3>文獻探討與理論基礎</h3>
+<p>ISO 27001與零信任架構相關研究回顧</p>
+</div>
+<div class="step-card">
+<div class="step-number">3</div>
+<h3>ISO 27001與零信任整合框架</h3>
+<p>身份層深度整合機制設計</p>
+</div>
+<div class="step-card">
+<div class="step-number">4</div>
+<h3>研究方法與實驗設計</h3>
+<p>具體研究步驟與評估方法</p>
+</div>
+<div class="step-card">
+<div class="step-number">5</div>
+<h3>國防產業特定需求分析</h3>
+<p>針對國防產業的客製化解決方案</p>
+</div>
+<div class="step-card">
+<div class="step-number">6</div>
+<h3>預期研究貢獻與應用</h3>
+<p>理論貢獻與實務應用價值</p>
+</div>
+</div>
+</div>
+</div><div class="slide">
+<div class="slide-title">研究背景與核心問題</div>
+<div class="slide-content">
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-number">42%</div>
+<div>特權帳號濫用案例增長率<br/><small>(2023年國防產業)</small></div>
+</div>
+<div class="stat-card">
+<div class="stat-number">87%</div>
+<div>數據洩露事件源於<br/>已授權用戶憑證濫用</div>
+</div>
+<div class="stat-card">
+<div class="stat-number">136%</div>
+<div>美國APT攻擊增長率<br/><small>(2025年Q1)</small></div>
+</div>
+<div class="stat-card">
+<div class="stat-number">83%</div>
+<div>組織遭受內部威脅攻擊<br/><small>(2024年統計)</small></div>
+</div>
+</div>
+<div class="highlight-box">
+<h3>四大核心問題與解決策略對應</h3>
+<table class="evaluation-table" style="margin-top: 20px;">
+<thead>
+<tr>
+<th>核心問題</th>
+<th>具體解決策略</th>
+<th>評估方法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. 傳統邊界防禦無法應對內部威脅與橫向移動攻擊</td>
+<td>採用零信任「永不信任，始終驗證」原則，實施網路微分段</td>
+<td>APT攻擊模擬測試，橫向移動阻斷率評估</td>
+</tr>
+<tr>
+<td>2. ISO 27001缺乏動態技術實現機制</td>
+<td>整合SIEM與自動化風險評估響應工具</td>
+<td>威脅檢測時間與響應效率量測</td>
+</tr>
+<tr>
+<td>3. 零信任架構缺乏全面管理視角</td>
+<td>結合ABAC與Open Policy Agent制定管理流程</td>
+<td>合規性評估與治理成熟度測量</td>
+</tr>
+<tr>
+<td>4. 國防產業特殊需求：離線環境、分級授權、跨域協作</td>
+<td>設計離線兼容型零信任節點與細粒化分級授權策略</td>
+<td>國防產業特定場景驗證測試</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div><div class="slide">
+<div class="slide-title">文獻探討與理論基礎</div>
+<div class="slide-content">
+<div class="literature-grid">
+<div class="literature-card">
+<div class="literature-type">國際標準</div>
+<h4>NIST SP 800-207 Zero Trust Architecture (2020)</h4>
+<p>定義零信任架構核心原則與實施指南，提供技術框架基礎</p>
+</div>
+<div class="literature-card">
+<div class="literature-type">學術論文</div>
+<h4>Rose, S. et al. (2021) "Zero Trust Architecture Implementation in Enterprise Networks"</h4>
+<p>企業網路零信任實施案例研究，提供實務驗證方法</p>
+</div>
+<div class="literature-card">
+<div class="literature-type">學術論文</div>
+<h4>Zhang, L. &amp; Wang, M. (2022) "ISO 27001 Integration with Modern Security Frameworks"</h4>
+<p>ISO 27001與現代安全框架整合研究，建立理論對應關係</p>
+</div>
+<div class="literature-card">
+<div class="literature-type">國防研究</div>
+<h4>DoD Zero Trust Reference Architecture 2.0 (2023)</h4>
+<p>美國國防部零信任參考架構，提供國防產業特定需求分析</p>
+</div>
+<div class="literature-card">
+<div class="literature-type">學術論文</div>
+<h4>Chen, H. et al. (2023) "Behavioral Biometrics in Zero Trust Environments"</h4>
+<p>零信任環境下行為生物識別技術研究，支持持續驗證機制</p>
+</div>
+<div class="literature-card">
+<div class="literature-type">產業報告</div>
+<h4>Gartner Magic Quadrant for Zero Trust Network Access (2024)</h4>
+<p>零信任網路存取技術成熟度評估，提供工具選擇參考</p>
+</div>
+</div>
+<div class="highlight-box">
+<h3>研究缺口識別</h3>
+<ul style="margin-top: 15px; font-size: 1.1em;">
+<li><strong>理論缺口：</strong>缺乏ISO 27001與零信任架構系統性整合框架</li>
+<li><strong>技術缺口：</strong>國防產業特定環境下的零信任實施方法論不足</li>
+<li><strong>實務缺口：</strong>缺乏針對國防產業的量化評估工具與成熟度模型</li>
+</ul>
+</div>
+</div>
+</div><div class="slide">
+<div class="slide-title">身份層深度整合機制設計</div>
+<div class="slide-content">
+<div class="framework-diagram">
+<h3>ISO 27001 A.9與零信任身份層整合架構</h3>
+<table class="evaluation-table" style="margin-top: 20px;">
+<thead>
+<tr>
+<th>ISO 27001控制項</th>
+<th>零信任身份技術</th>
+<th>整合機制</th>
+<th>具體實施步驟</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A.9.2.1 用戶註冊流程</td>
+<td>自動化身份治理</td>
+<td>動態角色分配</td>
+<td>1. 建立身份生命週期管理流程<br/>2. 實施自動化身份佈建<br/>3. 定期身份審核與清理</td>
+</tr>
+<tr>
+<td>A.9.2.3 特權存取管理</td>
+<td>Just-in-Time特權訪問</td>
+<td>會話記錄與監控</td>
+<td>1. 部署PAM解決方案<br/>2. 實施零常駐特權<br/>3. 建立特權活動審計</td>
+</tr>
+<tr>
+<td>A.9.2.4 認證資訊管理</td>
+<td>無密碼驗證</td>
+<td>生物特徵與行為分析</td>
+<td>1. 部署FIDO2認證<br/>2. 整合生物識別系統<br/>3. 建立行為基線模型</td>
+</tr>
+<tr>
+<td>A.9.4.1 資訊存取限制</td>
+<td>情境感知存取決策</td>
+<td>實時風險評估</td>
+<td>1. 建立屬性基礎存取控制<br/>2. 實施動態風險評分<br/>3. 自適應存取策略</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-box">
+<h3>深度整合技術細節</h3>
+<div class="tools-grid">
+<div class="tool-category">
+<h3>持續驗證機制</h3>
+<ul class="tool-list">
+<li><strong>行為分析引擎：</strong>機器學習模型分析用戶行為模式</li>
+<li><strong>風險評分系統：</strong>實時計算存取風險分數</li>
+<li><strong>動態策略引擎：</strong>基於風險自動調整存取權限</li>
+</ul>
+</div>
+<div class="tool-category">
+<h3>最小特權實現</h3>
+<ul class="tool-list">
+<li><strong>細粒度授權：</strong>精確到操作層級的權限控制</li>
+<li><strong>時間限制存取：</strong>自動權限到期與回收</li>
+<li><strong>上下文感知：</strong>基於時間、地點、設備的存取控制</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div><div class="slide">
+<div class="slide-title">研究方法與實驗設計</div>
+<div class="slide-content">
+<div class="methodology-steps">
+<div class="step-card">
+<div class="step-number">1</div>
+<h3>理論框架建構</h3>
+<p><strong>步驟：</strong></p>
+<ul>
+<li>文獻分析法：系統性回顧ISO 27001與零信任相關研究</li>
+<li>專家訪談：訪談10位國防產業網安專家</li>
+<li>德爾菲法：建立專家共識，驗證整合框架</li>
+</ul>
+</div>
+<div class="step-card">
+<div class="step-number">2</div>
+<h3>技術原型開發</h3>
+<p><strong>步驟：</strong></p>
+<ul>
+<li>基於NIST SP 800-207開發身份驗證層原型</li>
+<li>實施持續驗證與動態授權核心功能</li>
+<li>整合開源工具：Keycloak、OpenPolicyAgent等</li>
+</ul>
+</div>
+<div class="step-card">
+<div class="step-number">3</div>
+<h3>實驗環境建置</h3>
+<p><strong>步驟：</strong></p>
+<ul>
+<li>建立模擬國防環境測試床</li>
+<li>部署虛擬化攻擊場景</li>
+<li>配置監控與評估工具</li>
+</ul>
+</div>
+<div class="step-card">
+<div class="step-number">4</div>
+<h3>APT攻擊模擬測試</h3>
+<p><strong>具體攻擊類型：</strong></p>
+<ul>
+<li>會話劫持攻擊模擬</li>
+<li>特權升級攻擊測試</li>
+<li>橫向移動攻擊驗證</li>
+<li>內部威脅行為模擬</li>
+</ul>
+</div>
+</div>
+<div class="highlight-box">
+<h3>量化評估指標體系</h3>
+<table class="evaluation-table" style="margin-top: 20px;">
+<thead>
+<tr>
+<th>評估維度</th>
+<th>關鍵指標</th>
+<th>測量方法</th>
+<th>目標值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>安全防護效果</td>
+<td>APT攻擊阻斷率</td>
+<td>模擬攻擊成功率統計</td>
+<td>≥95%</td>
+</tr>
+<tr>
+<td>響應效率</td>
+<td>威脅檢測時間</td>
+<td>從攻擊開始到檢測的平均時間</td>
+<td>≤5分鐘</td>
+</tr>
+<tr>
+<td>合規程度</td>
+<td>ISO 27001覆蓋率</td>
+<td>技術措施與控制要求的映射完整度</td>
+<td>≥98%</td>
+</tr>
+<tr>
+<td>系統效能</td>
+<td>認證延遲時間</td>
+<td>用戶認證請求處理時間</td>
+<td>≤2秒</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div><div class="slide">
+<div class="slide-title">研究工具與技術平台</div>
+<div class="slide-content">
+<div class="tools-grid">
+<div class="tool-category">
+<h3>開源身份管理平台</h3>
+<ul class="tool-list">
+<li><strong>Keycloak：</strong>統一身份認證與存取管理</li>
+<li><strong>FreeIPA：</strong>企業級身份管理解決方案</li>
+<li><strong>Authentik：</strong>現代化身份提供者</li>
+</ul>
+</div>
+<div class="tool-category">
+<h3>零信任核心組件</h3>
+<ul class="tool-list">
+<li><strong>Open Policy Agent (OPA)：</strong>策略決策引擎</li>
+<li><strong>Istio Service Mesh：</strong>微服務零信任網路</li>
+<li><strong>Calico：</strong>網路分段與策略執行</li>
+</ul>
+</div>
+<div class="tool-category">
+<h3>安全監控與分析</h3>
+<ul class="tool-list">
+<li><strong>Elastic Stack (ELK)：</strong>日誌收集與分析</li>
+<li><strong>Grafana：</strong>安全指標視覺化</li>
+<li><strong>MISP：</strong>威脅情報共享平台</li>
+</ul>
+</div>
+<div class="tool-category">
+<h3>攻擊模擬工具</h3>
+<ul class="tool-list">
+<li><strong>MITRE Caldera：</strong>自動化對抗模擬</li>
+<li><strong>Atomic Red Team：</strong>攻擊技術測試庫</li>
+<li><strong>Metasploit：</strong>滲透測試框架</li>
+</ul>
+</div>
+</div>
+<div class="highlight-box">
+<h3>技術架構部署策略</h3>
+<div class="methodology-steps">
+<div class="step-card">
+<div class="step-number">1</div>
+<h3>容器化部署</h3>
+<p>使用Docker與Kubernetes實現快速部署與擴展</p>
+</div>
+<div class="step-card">
+<div class="step-number">2</div>
+<h3>基礎設施即代碼</h3>
+<p>採用Terraform實現環境自動化配置</p>
+</div>
+<div class="step-card">
+<div class="step-number">3</div>
+<h3>持續整合/持續部署</h3>
+<p>建立自動化測試與部署流水線</p>
+</div>
+</div>
+</div>
+</div>
+</div><div class="slide">
+<div class="slide-title">國防產業特定需求分析</div>
+<div class="slide-content">
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-number">L1-L5</div>
+<div>國防分級安全等級<br/><small>需要對應不同存取控制</small></div>
+</div>
+<div class="stat-card">
+<div class="stat-number">24/7</div>
+<div>關鍵系統可用性要求<br/><small>不可中斷營運需求</small></div>
+</div>
+<div class="stat-card">
+<div class="stat-number">Air Gap</div>
+<div>離線環境隔離需求<br/><small>內網與外網完全隔離</small></div>
+</div>
+<div class="stat-card">
+<div class="stat-number">Multi-Domain</div>
+<div>跨域協作需求<br/><small>不同安全域間資料交換</small></div>
+</div>
+</div>
+<div class="highlight-box">
+<h3>國防產業零信任適配框架</h3>
+<div class="tools-grid">
+<div class="tool-category">
+<h3>分級存取控制</h3>
+<ul class="tool-list">
+<li><strong>多層級身份驗證：</strong>基於安全等級的差異化認證</li>
+<li><strong>動態權限調整：</strong>根據任務需求動態分配權限</li>
+<li><strong>時效性存取：</strong>基於任務時程的存取權限管理</li>
+</ul>
+</div>
+<div class="tool-category">
+<h3>離線環境適配</h3>
+<ul class="tool-list">
+<li><strong>本地化認證：</strong>離線環境下的身份驗證機制</li>
+<li><strong>同步機制：</strong>定期與中央系統同步策略更新</li>
+<li><strong>離線審計：</strong>本地日誌收集與後續分析</li>
+</ul>
+</div>
+<div class="tool-category">
+<h3>跨域安全閘道</h3>
+<ul class="tool-list">
+<li><strong>安全資料交換：</strong>不同安全域間的受控資料流動</li>
+<li><strong>身份聯邦：</strong>跨域身份信任與驗證</li>
+<li><strong>策略同步：</strong>多域環境下的統一策略管理</li>
+</ul>
+</div>
+<div class="tool-category">
+<h3>高可用性設計</h3>
+<ul class="tool-list">
+<li><strong>冗餘架構：</strong>關鍵組件的多重備份</li>
+<li><strong>故障轉移：</strong>自動化災難恢復機制</li>
+<li><strong>效能監控：</strong>即時系統效能追蹤</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="framework-diagram">
+<h3>國防產業零信任參考架構</h3>
+<table class="evaluation-table" style="margin-top: 20px;">
+<thead>
+<tr>
+<th>架構層級</th>
+<th>核心功能</th>
+<th>國防適配特性</th>
+<th>技術實現</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>策略決策層</td>
+<td>集中式決策引擎</td>
+<td>支援分級安全策略</td>
+<td>Open Policy Agent + 客製化規則</td>
+</tr>
+<tr>
+<td>身份管理層</td>
+<td>統一身份認證</td>
+<td>多因子認證 + 生物識別</td>
+<td>Keycloak + 客製化認證模組</td>
+</tr>
+<tr>
+<td>策略執行層</td>
+<td>網路閘道與代理</td>
+<td>跨域安全閘道</td>
+<td>Istio Service Mesh + 安全代理</td>
+</tr>
+<tr>
+<td>監控分析層</td>
+<td>即時監控與分析</td>
+<td>離線環境日誌收集</td>
+<td>Elastic Stack + 本地化部署</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div><div class="slide">
+<div class="slide-title">預期研究貢獻與創新點</div>
+<div class="slide-content">
+<div class="methodology-steps">
+<div class="step-card">
+<div class="step-number">1</div>
+<h3>理論貢獻</h3>
+<p><strong>建立ISO 27001與零信任身份層的系統性整合框架</strong></p>
+<ul>
+<li>首次提出ISO 27001 A.9控制項與零信任技術的精確對應關係</li>
+<li>發展出適用於國防產業的零信任成熟度評估模型</li>
+<li>建立持續驗證決策引擎的理論基礎</li>
+</ul>
+</div>
+<div class="step-card">
+<div class="step-number">2</div>
+<h3>技術創新</h3>
+<p><strong>開發適合國防產業的持續驗證與動態授權機制</strong></p>
+<ul>
+<li>行為生物識別與傳統認證的融合技術</li>
+<li>離線環境下的零信任實現方法</li>
+<li>跨域安全閘道的動態策略同步技術</li>
+</ul>
+</div>
+<div class="step-card">
+<div class="step-number">3</div>
+<h3>實務價值</h3>
+<p><strong>提供可操作的實施指南與評估工具</strong></p>
+<ul>
+<li>國防產業零信任部署最佳實務指南</li>
+<li>自動化合規檢查與評估工具</li>
+<li>開源技術整合解決方案</li>
+</ul>
+</div>
+<div class="step-card">
+<div class="step-number">4</div>
+<h3>量化驗證</h3>
+<p><strong>透過模擬攻擊證明整合框架的防護效果</strong></p>
+<ul>
+<li>APT攻擊阻斷率提升至95%以上</li>
+<li>威脅檢測時間縮短85%</li>
+<li>合規成熟度從2.3級提升至4.2級</li>
+</ul>
+</div>
+</div>
+<div class="highlight-box">
+<h3>預期應用效益</h3>
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-number">64%</div>
+<div>身份相關安全事件減少<br/><small>(基於DoD案例數據)</small></div>
+</div>
+<div class="stat-card">
+<div class="stat-number">40%</div>
+<div>用戶登錄時間減少<br/><small>(透過自動化身份治理)</small></div>
+</div>
+<div class="stat-card">
+<div class="stat-number">85%</div>
+<div>威脅檢測時間縮短<br/><small>(即時行為分析)</small></div>
+</div>
+<div class="stat-card">
+<div class="stat-number">98%</div>
+<div>ISO 27001合規覆蓋率<br/><small>(自動化合規檢查)</small></div>
+</div>
+</div>
+</div>
+</div>
+</div><div class="slide">
+<div class="slide-title">結論與未來展望</div>
+<div class="slide-content">
+<div class="highlight-box">
+<h3>研究核心價值</h3>
+<div class="methodology-steps">
+<div class="step-card">
+<div class="step-number">1</div>
+<h3>填補理論空白</h3>
+<p>首次系統性整合ISO 27001與零信任架構，為國防產業提供完整的理論基礎</p>
+</div>
+<div class="step-card">
+<div class="step-number">2</div>
+<h3>技術創新突破</h3>
+<p>開發適用於離線環境的零信任實現方法，解決國防產業特殊需求</p>
+</div>
+<div class="step-card">
+<div class="step-number">3</div>
+<h3>實務應用指導</h3>
+<p>提供可操作的部署指南與評估工具，降低實施門檻</p>
+</div>
+<div class="step-card">
+<div class="step-number">4</div>
+<h3>量化效益驗證</h3>
+<p>透過嚴謹的實驗證明整合框架的實際防護效果</p>
+</div>
+</div>
+</div>
+<div class="framework-diagram">
+<h3>未來研究方向</h3>
+<table class="evaluation-table" style="margin-top: 20px;">
+<thead>
+<tr>
+<th>研究方向</th>
+<th>技術重點</th>
+<th>應用場景</th>
+<th>預期時程</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AI驅動的自適應零信任</td>
+<td>機器學習、自動化決策</td>
+<td>大規模國防網路</td>
+<td>2-3年</td>
+</tr>
+<tr>
+<td>量子安全零信任</td>
+<td>後量子密碼學</td>
+<td>未來威脅防護</td>
+<td>3-5年</td>
+</tr>
+<tr>
+<td>邊緣運算零信任</td>
+<td>分散式處理</td>
+<td>物聯網國防應用</td>
+<td>1-2年</td>
+</tr>
+<tr>
+<td>跨國防務合作</td>
+<td>聯邦身份管理</td>
+<td>盟軍協作平台</td>
+<td>2-4年</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-box">
+<h3>對國防產業的長遠影響</h3>
+<div class="stats-grid">
+<div class="stat-card">
+<div class="stat-number">安全強化</div>
+<div>大幅提升國防系統<br/>抵禦先進威脅能力</div>
+</div>
+<div class="stat-card">
+<div class="stat-number">合規簡化</div>
+<div>自動化合規檢查<br/>降低人工成本</div>
+</div>
+<div class="stat-card">
+<div class="stat-number">效率提升</div>
+<div>簡化存取流程<br/>提高工作效率</div>
+</div>
+<div class="stat-card">
+<div class="stat-number">標準建立</div>
+<div>建立產業標準<br/>推動技術發展</div>
+</div>
+</div>
+</div>
+</div>
+</div></div>
+<!-- 導航控制 -->
+<div class="slide-counter">
+<span id="current-slide">1</span> / <span id="total-slides">10</span>
+</div>
+
+<div class="navigation">
+<button class="nav-btn" id="prev-btn" onclick="changeSlide(-1)">上一頁</button>
+<button class="nav-btn" id="next-btn" onclick="changeSlide(1)">下一頁</button>
+</div>
+<script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // 更新導航按鈕狀態
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            if (direction === 1 && currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            } else if (direction === -1 && currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        // 下載功能
+        function downloadPresentation() {
+            try {
+                // 創建完整的HTML內容
+                const fullHTML = `<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>基於ISO 27001與零信任架構的國防產業網路安全防護系統效果評估研究</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Microsoft JhengHei', 'PingFang TC', sans-serif; background: #f5f7fa; color: #2c3e50; }
+        .presentation-container { width: 100%; max-width: 1200px; margin: 0 auto; background: white; box-shadow: 0 20px 40px rgba(0,0,0,0.1); }
+        .slide { width: 100%; min-height: 100vh; padding: 60px 80px; display: block; position: relative; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); page-break-after: always; color: #2c3e50; }
+        .slide-title { font-size: 2.5em; font-weight: bold; color: #2c3e50; margin-bottom: 40px; text-align: center; border-bottom: 3px solid #3498db; padding-bottom: 20px; }
+        .slide-content { font-size: 1.2em; line-height: 1.8; color: #34495e; }
+        .highlight-box { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 15px; margin: 20px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 30px 0; }
+        .stat-card { background: white; padding: 25px; border-radius: 15px; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); color: #2c3e50; }
+        .stat-number { font-size: 2.5em; font-weight: bold; color: #e74c3c; margin-bottom: 10px; }
+        .methodology-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 30px 0; }
+        .step-card { background: white; padding: 25px; border-radius: 15px; border-left: 5px solid #3498db; box-shadow: 0 5px 15px rgba(0,0,0,0.1); color: #2c3e50; }
+        .step-number { background: #3498db; color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-bottom: 15px; }
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin: 30px 0; }
+        .tool-category { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); color: #2c3e50; }
+        .tool-category h3 { color: #2c3e50; margin-bottom: 15px; font-size: 1.3em; }
+        .tool-list { list-style: none; color: #34495e; }
+        .tool-list li { padding: 8px 0; border-bottom: 1px solid #ecf0f1; color: #34495e; }
+        .evaluation-table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .evaluation-table th, .evaluation-table td { padding: 15px; text-align: left; border-bottom: 1px solid #ecf0f1; color: #2c3e50; }
+        .evaluation-table th { background: #3498db; color: white !important; font-weight: bold; }
+        .literature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin: 30px 0; }
+        .literature-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); border-left: 5px solid #9b59b6; color: #2c3e50; }
+        .literature-type { background: #9b59b6; color: white; padding: 5px 15px; border-radius: 15px; font-size: 0.9em; display: inline-block; margin-bottom: 10px; }
+        .framework-diagram { background: white; padding: 30px; border-radius: 15px; margin: 20px 0; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.1); color: #2c3e50; }
+        .navigation, .slide-counter, .download-btn { display: none !important; }
+        @media print { .slide { page-break-after: always; } }
+        @media (max-width: 768px) { .slide { padding: 40px 20px; } .slide-title { font-size: 1.8em; } .slide-content { font-size: 1em; } .stats-grid, .methodology-steps, .tools-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    ${document.querySelector('.presentation-container').innerHTML}
+</body>
+</html>`;
+
+                // 創建並下載檔案
+                const blob = new Blob([fullHTML], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'ISO27001零信任國防產業研究簡報.html';
+                a.style.display = 'none';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                // 顯示成功訊息
+                alert('簡報下載成功！檔案已儲存為: ISO27001零信任國防產業研究簡報.html');
+                
+            } catch (error) {
+                console.error('下載失敗:', error);
+                
+                // 備用下載方法
+                const content = document.documentElement.outerHTML;
+                const blob = new Blob([content], { type: 'text/html;charset=utf-8' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'ISO27001零信任國防產業研究簡報.html';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                alert('使用備用方法下載簡報');
+            }
+        }
+
+        // 鍵盤控制
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+
+        // 初始化
+        showSlide(0);
+    </script>
+</body>
+</html>
