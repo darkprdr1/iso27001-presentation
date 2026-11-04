@@ -97,8 +97,7 @@ nav.tabs button[aria-selected="true"]{color:var(--accent);box-shadow:inset 0 3px
 .sethead{display:grid;grid-template-columns:34px 1fr 1fr 44px;gap:6px;font-size:11px;color:var(--ink-3);letter-spacing:.06em}
 .rpe{display:flex;gap:4px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--ink-2)}
 .rpe button{min-height:32px;padding:4px 0;width:36px;font-family:var(--font-data)}
-.warm{display:grid;gap:4px;font-size:14px}
-.warm li{display:flex;justify-content:space-between;gap:8px}
+.warm-ex{padding-block:8px;gap:6px}
 ul.clean{list-style:none;padding:0;margin:0}
 .timer{display:flex;gap:8px;align-items:center}
 .timer .t{font-family:var(--font-data);font-size:26px;font-weight:600;min-width:72px;text-align:center}
@@ -221,8 +220,8 @@ details .body ul{padding-left:18px;margin:6px 0}
     </div>
 
     <div class="card" id="warmCard">
-      <h2>熱身 <small class="muted">約 5 分鐘，每堂必做</small></h2>
-      <ul class="clean warm" id="warmList"></ul>
+      <h2>熱身 <small class="muted">約 5 分鐘，每堂必做 · 點動作名稱看要領與影片</small></h2>
+      <div id="warmList"></div>
     </div>
 
     <div class="card">
@@ -723,7 +722,7 @@ function renderToday(){
   $("#nextTitle").innerHTML=`<span class="pill ${type}">${type==="M"?"微量":type}</span> ${esc(type==="M"?mv.name:S.name.replace(/^[ABCD] · /,""))}`;
   $("#nextDesc").textContent=type==="M"?mv.desc:`${S.desc} · ${p.phase.focus}`;
   $("#btnPrevType").hidden=cur.version==="micro";
-  $("#warmList").innerHTML=WARM[type].map(([id,rx])=>`<li><span>${esc(EX[id].n)} <span class="en">${esc(EX[id].en)}</span></span><span class="num muted">${esc(rx)}</span></li>`).join("");
+  $("#warmList").innerHTML=WARM[type].map(([id,rx])=>`<div class="ex warm-ex" data-warm="${id}"><div class="head"><button class="ghost" style="border:0;padding:0;text-align:left;min-height:0" data-toggle><span class="name" style="font-size:15px">${esc(EX[id].n)}</span> <span class="en">${esc(EX[id].en)}</span>${videoOf(id)?' <span class="pill" style="font-size:11px">▶ 影片</span>':""}</button><span class="rx num">${esc(rx)}</span></div><div class="cue">${esc(EX[id].cue)}${videoHTML(id)}</div></div>`).join("");
   let items,fins=[],fmtHTML="";
   if(type==="M"){items=mv.items;}
   else if(type==="C"){const pool=cur.version==="full"?S.moves:S.movesShort;items=pool.map(m=>({...m,sets:fmt.rounds,reps:fmt.reps}));fmtHTML=`<div class="fmt" style="margin-bottom:8px"><span class="fn">${esc(fmt.name)}</span><span class="muted" style="font-size:13px">${esc(fmt.desc)}</span></div>`;}
