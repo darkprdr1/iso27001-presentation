@@ -468,6 +468,7 @@ const EX = {
   birddog:{n:"鳥狗式",en:"Bird Dog",eq:"徒手",u:"reps",cue:"四足跪姿，對側手腳同時伸直、停 3 秒，骨盆不能轉。想像腰上放一杯水，水不能倒。下背穩定度最重要的動作。"},
   kb_dl:{n:"壺鈴硬舉",en:"Kettlebell Deadlift",eq:"壺鈴",u:"kg",cue:"腳與肩同寬，壺鈴放在雙腳中間。先把屁股往後推、膝微彎、背打直像一塊板子，用臀部與大腿後側把壺鈴拉起來站直，吐氣。下放時先推屁股，不是先彎腰。"},
   kb_sumo:{n:"壺鈴相撲硬舉",en:"Kettlebell Sumo Deadlift",eq:"壺鈴",u:"kg",cue:"腳開比肩寬、腳尖外轉 30 度，壺鈴在雙腳中間。膝蓋朝腳尖方向、上身比一般硬舉更直，用臀部內側把壺鈴拉起。"},
+  kb_sdhp:{n:"壺鈴相撲硬舉高拉",en:"Kettlebell Sumo Deadlift High Pull",eq:"壺鈴",u:"kg",cue:"腳開比肩寬、腳尖外轉，壺鈴在雙腳中間。先像相撲硬舉一樣用腿和臀把壺鈴拉離地，站直的瞬間順勢聳肩、手肘往上往外帶，壺鈴拉到胸口下方（不要高過鎖骨）。下放時手肘先放、再推屁股往後。全身爆發動作，用輕一點的壺鈴、動作要連貫。基礎期以壺鈴相撲硬舉代替。"},
   db_rdl:{n:"啞鈴羅馬尼亞硬舉",en:"Dumbbell Romanian Deadlift",eq:"啞鈴",u:"kg",cue:"雙手持啞鈴站直。膝蓋微彎固定，髖往後推，啞鈴沿著大腿滑到小腿中段、感覺大腿後側拉緊即停；全程背部中立。用臀部把身體拉回來。每下 3 秒下放。"},
   stepup:{n:"登階",en:"Step-Up",eq:"登階板 + 啞鈴",u:"kg",cue:"整個腳掌踩穩階板，用前腳把身體推上去，後腳不要蹬地。下來時慢（3 秒）。先徒手，穩了再拿啞鈴。"},
   superman:{n:"俯臥背伸展（超人式）",en:"Superman / Back Extension",eq:"徒手",u:"reps",cue:"趴著、手往前伸。手和腳同時抬離地面 2–3 公分、停 2 秒，眼睛看地板，不要仰頭。練的是下背耐力，不是抬得高。"},
@@ -551,10 +552,10 @@ const SESS = {
       {name:"AMRAP 12 分",desc:"12 分鐘內盡量多輪：每個動作 10 下，照順序做完算一輪。記下總輪數，下次挑戰超越。",rounds:1,reps:"10 下 × 盡量多輪",min:12},
       {name:"階梯 10-8-6-4-2",desc:"每個動作 10 下、全部做完換 8 下⋯一路到 2 下。全程計時，下次試著更快。",rounds:5,reps:"10→2",min:14},
     ],
-    moves:[{pool:["kb_swing","goblet"],alt0:"kb_dl",u:"kg"},{pool:["thruster","sq_press"],u:"kg"},{pool:["fast_step","skater","jj"]},{pool:["pushup","mtn","burpee_e"]},{pool:["rev_lunge","sq_pulse"],u:"reps"},{pool:["renegade","band_row"],u:"kg"}],
+    moves:[{pool:["kb_swing","goblet","kb_sdhp"],alt0:"kb_dl",u:"kg"},{pool:["thruster","sq_press"],u:"kg"},{pool:["fast_step","skater","jj"]},{pool:["pushup","mtn","burpee_e"]},{pool:["rev_lunge","sq_pulse"],u:"reps"},{pool:["renegade","band_row"],u:"kg"}],
     movesShort:[{pool:["bw_squat","sq_pulse"]},{pool:["burpee_e","mtn"]},{pool:["rev_lunge","skater"]},{pool:["pushup","band_ohp"]},{pool:["jj","fast_step"]},{pool:["band_row","band_fly"]}]},
   D:{name:"D · 全身力量 + 間歇",desc:"深蹲、肩推、划船，再加跑步機間歇",
-    full:[{pool:["goblet","split","kb_swing"],role:"main",alt0:"goblet"},{pool:["db_ohp","db_press"],role:"sec"},{pool:["db_row","renegade"],role:"sec",ps:1},{pool:["hipthrust","sl_bridge"],sets:3,reps:"12"},{pool:["deadbug","birddog","hollow"],sets:3,reps:"10／側"}],
+    full:[{pool:["goblet","split","kb_swing","kb_sdhp"],role:"main",alt0:"goblet"},{pool:["db_ohp","db_press"],role:"sec"},{pool:["db_row","renegade"],role:"sec",ps:1},{pool:["hipthrust","sl_bridge"],sets:3,reps:"12"},{pool:["deadbug","birddog","hollow"],sets:3,reps:"10／側"}],
     fullFin:[{pool:["tm_interval","tm_pyramid","tm_3030","tm_hill"],sets:1,reps:"12–18 分鐘"}],
     short:[{pool:["bw_squat","split"],sets:3,reps:"15"},{pool:["band_ohp","pushup"],sets:3,reps:"12"},{pool:["band_row","band_fly"],sets:3,reps:"15"},{pool:["sl_bridge","glutebridge"],sets:3,reps:"12／側"},{pool:["deadbug","birddog"],sets:3,reps:"10／側"}],
     shortFin:[{pool:["stairs","tm_3030"],sets:1,reps:"10 分鐘（可省略）"}]},
@@ -694,7 +695,7 @@ function suggest(exId,targetReps){
 
 /* ========= TODAY TAB ========= */
 let cur={type:"A",version:"full",back:null,feel:null,swaps:{},bonus:null,bonusDone:false};
-function resolveId(it,slot,p){const pool=it.pool||[it.id];const c=typeCount(cur.version==="micro"?"M":cur.type);let idx=(Math.floor(c/2)+slot+(cur.swaps[slot]||0))%pool.length;let id=pool[idx];if(p.phaseIdx===0&&id==="kb_swing")id=it.alt0||"kb_dl";return id;}
+function resolveId(it,slot,p){const pool=it.pool||[it.id];const c=typeCount(cur.version==="micro"?"M":cur.type);let idx=(Math.floor(c/2)+slot+(cur.swaps[slot]||0))%pool.length;let id=pool[idx];if(p.phaseIdx===0&&(id==="kb_swing"||id==="kb_sdhp"))id=id==="kb_sdhp"?"kb_sumo":(it.alt0||"kb_dl");return id;}
 function scheme(item,p){
   if(item.role){const sc=p.phase[item.role];let sets=sc[0];if(p.deload)sets=Math.max(2,sets-1);return {sets,reps:sc[1]+(item.ps?"／側":""),rpe:p.deload?"6":p.phase.rpe};}
   return {sets:item.sets,reps:item.reps,rpe:null};
@@ -818,7 +819,7 @@ function renderHistory(){
   const weeks=[];for(let i=11;i>=0;i--){const k=fmtDate(addDays(thisMon,-7*i));weeks.push({k,v:wc[k]||0});}
   drawBars($("#chartWeek"),weeks,goal);
   // lift chart
-  const liftIds=["kb_dl","db_rdl","kb_sumo","goblet","hipthrust","rev_lunge","split","db_press","db_ohp","db_row","lat_raise","kb_swing","thruster","suitcase","farmer"];
+  const liftIds=["kb_dl","db_rdl","kb_sumo","kb_sdhp","goblet","hipthrust","rev_lunge","split","db_press","db_ohp","db_row","lat_raise","kb_swing","thruster","suitcase","farmer"];
   $("#liftSel").innerHTML=liftIds.map(id=>`<option value="${id}" ${id===liftSel?"selected":""}>${esc(EX[id].n)} · ${esc(EX[id].en)}</option>`).join("");
   const pts=[];for(const s of [...DB.sessions].sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id)){const e=(s.exercises||[]).find(x=>x.id===liftSel);if(!e)continue;const ws=e.sets.filter(t=>t.done&&t.w>0).map(t=>t.w);if(ws.length)pts.push({k:s.date,v:Math.max(...ws),rpe:e.rpe});}
   drawLine($("#chartLift"),pts.slice(-20));
