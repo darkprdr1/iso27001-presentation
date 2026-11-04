@@ -151,6 +151,12 @@ details .body ul{padding-left:18px;margin:6px 0}
 .danger{color:var(--bad)}
 .note{background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--ink)}
 .exlib .cue{display:block}
+.vid{display:grid;gap:8px}
+.vid .frame{position:relative;width:100%;max-width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:var(--surface-2)}
+.vid .frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vid a.btn{display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.vidform{display:grid;grid-template-columns:1fr auto;gap:6px;margin-top:8px}
+.vidform input{min-width:0;width:100%}
 @media (max-width:420px){ .tiles{grid-template-columns:repeat(3,1fr)} .tile .v{font-size:18px} .set{grid-template-columns:28px 1fr 1fr 40px} .sethead{grid-template-columns:28px 1fr 1fr 40px} }
 @media (prefers-reduced-motion: reduce){ *{transition:none!important} }
 </style>
@@ -349,6 +355,7 @@ details .body ul{padding-left:18px;margin:6px 0}
 
     <div class="card">
       <h2>動作庫與要領</h2>
+      <p class="muted" style="font-size:13px">展開動作可貼上示範影片網址；之後在「今天」頁點動作名稱就能看到影片。影片網址會一起包含在備份裡。</p>
       <div class="exlib" id="exLib"></div>
     </div>
 
@@ -381,7 +388,6 @@ details .body ul{padding-left:18px;margin:6px 0}
       <div class="row">
         <button id="btnExport">產生備份文字</button>
         <button id="btnCopy">複製</button>
-        <a class="btn" id="dlLink" download="training-backup.json" hidden>下載 .json</a>
       </div>
       <textarea id="ioText" placeholder="備份內容會出現在這裡；要還原時，把備份貼在這裡再按「匯入」。"></textarea>
       <div class="row" style="margin-top:8px">
@@ -475,8 +481,9 @@ const SESSIONS_PER_PHASE = 12, DELOAD_FROM = 9;
 
 /* ========= STORAGE ========= */
 const KEY = "hst.v1";
-let DB = {settings:{name:"",birthYear:1981,heightCm:171,inc:1,travel:false},sessions:[],metrics:[]};
-function load(){ try{ const r=localStorage.getItem(KEY); if(r){ const o=JSON.parse(r); DB={...DB,...o,settings:{...DB.settings,...(o.settings||{})}}; } }catch(e){} }
+let DB = {settings:{name:"",birthYear:1981,heightCm:171,inc:1,travel:false,videos:{}},sessions:[],metrics:[]};
+const EMBED_VIDEO = true; // true = 內嵌 YouTube 播放器（自架版）；false = 以按鈕開新分頁
+function load(){ try{ const r=localStorage.getItem(KEY); if(r){ const o=JSON.parse(r); DB={...DB,...o,settings:{...DB.settings,...(o.settings||{}),videos:{...(o.settings&&o.settings.videos||{})}}}; } }catch(e){} }
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(DB)); }catch(e){ toast("無法寫入瀏覽器儲存空間，請匯出備份"); } }
 load();
 
@@ -491,6 +498,11 @@ const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;};
 const credit=s=>s.version==="micro"?0.5:1;
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),2200);}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function ytId(u){const m=String(u).match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);return m?m[1]:null;}
+function videoOf(id){const v=(DB.settings.videos||{})[id];return v&&/^https?:\/\//i.test(v)?v:null;}
+function videoHTML(id){const u=videoOf(id);if(!u)return "";const y=ytId(u);
+  if(EMBED_VIDEO&&y)return `<div class="vid"><div class="frame"><iframe src="https://www.youtube-nocookie.com/embed/${y}" title="${esc(EX[id].n)} 示範影片" loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen></iframe></div><a class="btn" href="${esc(u)}" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a></div>`;
+  return `<div class="vid"><a class="btn" href="${esc(u)}" target="_blank" rel="noopener">▶ 看示範影片${y?"（YouTube）":""} ↗</a></div>`;}
 
 /* ========= PROGRESSION STATE ========= */
 function progression(){
@@ -578,9 +590,9 @@ function exHTML(it,i,p){
   }
   const rpeBtns=sc.rpe!==null?`<div class="rpe">RPE ${[6,7,8,9,10].map(v=>`<button class="small" data-rpe="${v}" aria-pressed="false">${v}</button>`).join("")}<small>目標 ${sc.rpe}</small></div>`:"";
   return `<div class="ex" data-ex="${id}" data-role="${it.role||""}">
-    <div class="head"><button class="ghost" style="border:0;padding:0;text-align:left;min-height:0" data-toggle><span class="name">${esc(ex.n)}</span> <small class="muted">${esc(ex.eq)}</small></button>
+    <div class="head"><button class="ghost" style="border:0;padding:0;text-align:left;min-height:0" data-toggle><span class="name">${esc(ex.n)}</span> <small class="muted">${esc(ex.eq)}</small>${videoOf(id)?' <span class="pill" style="font-size:11px">▶ 影片</span>':""}</button>
       <span class="rx num">${sc.sets} × ${esc(sc.reps)}</span></div>
-    <div class="cue">${esc(ex.cue)}</div>
+    <div class="cue">${esc(ex.cue)}${videoHTML(id)}</div>
     ${sug?`<div class="note">${esc(sug.text)} <span class="muted num">（${sug.date}）</span></div>`:(unit==="kg"?`<div class="muted" style="font-size:13px">第一次：選一個能穩穩做完所有組、最後 2 下有點吃力的重量。</div>`:"")}
     <div class="sethead"><span>組</span><span>${unit==="kg"?"重量 kg":"器材"}</span><span>${rLabel}</span><span>完成</span></div>
     <div class="sets">${rows.join("")}</div>
@@ -670,7 +682,7 @@ function drawLine(svg,pts){
 function renderGuide(){
   const used=new Set();for(const t of ["A","B","C"]){for(const k of ["full","short","fullFin","shortFin"])(SESS[t][k]||[]).forEach(i=>{used.add(i.id);if(i.alt0)used.add(i.alt0);});WARM[t].forEach(w=>used.add(w[0]));}
   SESS.M.micro.forEach(i=>used.add(i.id));
-  $("#exLib").innerHTML=[...used].map(id=>`<details><summary>${esc(EX[id].n)} <small class="muted" style="font-weight:400">${esc(EX[id].eq)}</small></summary><div class="body">${esc(EX[id].cue)}</div></details>`).join("");
+  $("#exLib").innerHTML=[...used].map(id=>`<details data-exid="${id}"><summary>${esc(EX[id].n)} <small class="muted" style="font-weight:400">${esc(EX[id].eq)}${videoOf(id)?" · ▶ 有影片":""}</small></summary><div class="body">${esc(EX[id].cue)}<div style="margin-top:10px">${videoHTML(id)}</div><div class="vidform"><input type="url" inputmode="url" placeholder="貼上示範影片網址（YouTube 或任何連結）" value="${esc(videoOf(id)||"")}" aria-label="${esc(EX[id].n)} 影片網址"><button class="small" data-savevid>儲存</button></div>${videoOf(id)?'<button class="small ghost" data-delvid style="margin-top:6px">移除影片</button>':""}</div></details>`).join("");
 }
 
 /* ========= SETTINGS TAB ========= */
@@ -709,11 +721,16 @@ $("#liftSel").addEventListener("change",e=>{liftSel=e.target.value;renderHistory
 const tip=document.createElement("div");tip.className="tip";tip.hidden=true;document.body.appendChild(tip);
 document.addEventListener("pointermove",e=>{const el=e.target.closest&&e.target.closest("[data-tip]");if(el){tip.textContent=el.dataset.tip;tip.hidden=false;tip.style.left=e.clientX+"px";tip.style.top=e.clientY+"px";}else tip.hidden=true;});
 
+$("#tab-guide").addEventListener("click",e=>{
+  const t=e.target.closest("button");if(!t)return;const d=t.closest("details");if(!d)return;const id=d.dataset.exid;DB.settings.videos=DB.settings.videos||{};
+  if(t.dataset.savevid!==undefined){const u=d.querySelector("input[type=url]").value.trim();if(u&&!/^https?:\/\//i.test(u)){toast("網址要以 http:// 或 https:// 開頭");return;}if(u)DB.settings.videos[id]=u;else delete DB.settings.videos[id];save();renderGuide();renderToday();$(`details[data-exid="${id}"]`).open=true;toast(u?"影片已儲存":"已移除");}
+  if(t.dataset.delvid!==undefined){delete DB.settings.videos[id];save();renderGuide();renderToday();$(`details[data-exid="${id}"]`).open=true;toast("已移除");}
+});
 $("#tab-settings").addEventListener("click",e=>{
   const t=e.target.closest("button");if(!t)return;
   if(t.id==="sTravel"){setTravelBtn(t.getAttribute("aria-pressed")!=="true");return;}
-  if(t.id==="btnSaveSettings"){DB.settings={name:$("#sName").value.trim(),birthYear:+$("#sYear").value||1981,heightCm:+$("#sHeight").value||171,inc:+$("#sInc").value||1,travel:$("#sTravel").getAttribute("aria-pressed")==="true"};save();toast("設定已儲存");resetTodayForm();return;}
-  if(t.id==="btnExport"){const txt=JSON.stringify(DB,null,0);$("#ioText").value=txt;const a=$("#dlLink");try{a.href="data:application/json;charset=utf-8,"+encodeURIComponent(txt);a.hidden=false;}catch(err){}toast("備份已產生，請複製保存");return;}
+  if(t.id==="btnSaveSettings"){DB.settings={...DB.settings,name:$("#sName").value.trim(),birthYear:+$("#sYear").value||1981,heightCm:+$("#sHeight").value||171,inc:+$("#sInc").value||1,travel:$("#sTravel").getAttribute("aria-pressed")==="true"};save();toast("設定已儲存");resetTodayForm();return;}
+  if(t.id==="btnExport"){const txt=JSON.stringify(DB,null,0);$("#ioText").value=txt;toast("備份已產生，請複製保存");return;}
   if(t.id==="btnCopy"){const v=$("#ioText").value;if(!v){toast("先按「產生備份文字」");return;}navigator.clipboard?.writeText(v).then(()=>toast("已複製")).catch(()=>{$("#ioText").select();toast("請手動長按複製");});return;}
   if(t.id==="btnImport"){importText($("#ioText").value);return;}
   if(t.id==="btnReset"){if(t.dataset.confirm){DB.sessions=[];DB.metrics=[];save();delete t.dataset.confirm;t.textContent="刪除所有紀錄";toast("已清除");resetTodayForm();}else{t.dataset.confirm="1";t.textContent="再按一次確認刪除";t.classList.add("danger");setTimeout(()=>{delete t.dataset.confirm;t.textContent="刪除所有紀錄";t.classList.remove("danger");},3000);}}
