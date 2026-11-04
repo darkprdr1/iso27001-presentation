@@ -485,6 +485,7 @@ const EX = {
   split:{n:"後腳墊高分腿蹲",en:"Bulgarian Split Squat",eq:"啞鈴 + 登階板",u:"kg",cue:"後腳腳背踩在登階板上，前腿下蹲到大腿近水平，重心放在前腳跟。先徒手，再雙手持啞鈴。"},
   rev_lunge:{n:"後退弓步",en:"Reverse Lunge",eq:"啞鈴",u:"kg",cue:"一腳往後跨、後膝輕點地面，前腿大腿近水平；用前腳跟站回來。對膝蓋最友善的弓步。"},
   lat_lunge:{n:"側弓步",en:"Lateral Lunge",eq:"啞鈴",u:"kg",cue:"往側邊跨一大步、屁股往後坐在跨出去的那條腿上，另一腿打直；推回站直。練大腿內外側線條。"},
+  lat_lunge_sw:{n:"啞鈴左右交替側弓步",en:"Dumbbell Alternating Lateral Lunge (switching sides)",eq:"啞鈴",u:"kg",vid:"https://youtube.com/shorts/KyygUQrhcwI",cue:"單手持一顆啞鈴站直。往右跨一大步、屁股往後坐在右腿上、左腿打直，啞鈴跟著身體下到右腳內側；右腳推回站直的同時把啞鈴換到另一手，接著往左跨。左右交替算 1 下，節奏連貫。大腿內外側與臀部，順便練到核心換邊穩定。"},
   curtsy:{n:"屈膝禮弓步",en:"Curtsy Lunge",eq:"啞鈴",u:"kg",cue:"一腳往斜後方交叉跨到另一腳外側，像行屈膝禮，前腿下蹲；前腳推回。主攻臀部側面。"},
   db_ohp:{n:"啞鈴過頭推",en:"Dumbbell Overhead Press",eq:"啞鈴",u:"kg",cue:"站姿、肋骨往下收、核心收緊、屁股微夾。把啞鈴推到耳朵旁上方，不要塌腰往後仰。"},
   hipthrust:{n:"臀推（上背靠登階板）",en:"Hip Thrust",eq:"登階板 + 啞鈴",u:"kg",cue:"上背靠登階板，雙腳踩地。髖往上推到身體一直線、頂點夾臀 2 秒、下巴微收。可以把啞鈴放在髖上加重。"},
@@ -536,9 +537,9 @@ const WARM = {
 // role main / sec follow the phase scheme; fixed slots keep their own sets/reps. ps = per side.
 const SESS = {
   A:{name:"A · 臀腿塑形",desc:"後側鏈與臀腿線條：硬舉、臀推、弓步、負重行走",
-    full:[{pool:["kb_dl","db_rdl","kb_sumo"],role:"main"},{pool:["hipthrust","stepup"],role:"sec",ps:0},{pool:["rev_lunge","split","curtsy","lat_lunge"],role:"sec",ps:1},{pool:["band_walk","band_kick"],sets:3,reps:"12／側"},{pool:["suitcase","superman"],sets:3,reps:"30 秒／側",u:"kg"},{pool:["calf","band_gm"],sets:2,reps:"15"}],
+    full:[{pool:["kb_dl","db_rdl","kb_sumo"],role:"main"},{pool:["hipthrust","stepup"],role:"sec",ps:0},{pool:["rev_lunge","split","curtsy","lat_lunge","lat_lunge_sw"],role:"sec",ps:1},{pool:["band_walk","band_kick"],sets:3,reps:"12／側"},{pool:["suitcase","superman"],sets:3,reps:"30 秒／側",u:"kg"},{pool:["calf","band_gm"],sets:2,reps:"15"}],
     fullFin:[{pool:["tm_incline","stairs"],sets:1,reps:"10 分鐘"}],
-    short:[{pool:["sl_rdl","band_gm"],sets:3,reps:"12／側"},{pool:["sl_bridge","glutebridge"],sets:3,reps:"12／側"},{pool:["rev_lunge","curtsy","lat_lunge"],sets:3,reps:"10／側",u:"reps"},{pool:["band_walk","band_kick"],sets:3,reps:"12／側"},{pool:["superman","birddog"],sets:3,reps:"12"}],
+    short:[{pool:["sl_rdl","band_gm"],sets:3,reps:"12／側"},{pool:["sl_bridge","glutebridge"],sets:3,reps:"12／側"},{pool:["rev_lunge","curtsy","lat_lunge","lat_lunge_sw"],sets:3,reps:"10／側",u:"reps"},{pool:["band_walk","band_kick"],sets:3,reps:"12／側"},{pool:["superman","birddog"],sets:3,reps:"12"}],
     shortFin:[{pool:["stairs"],sets:1,reps:"5–10 分鐘（可省略）"}]},
   B:{name:"B · 上半身線條",desc:"推、拉、肩與手臂雕塑，加上抗旋轉核心",
     full:[{pool:["db_press","pushup","db_ohp"],role:"main"},{pool:["db_row","db_fly","renegade"],role:"sec",ps:1},{pool:["lat_raise","curl","tri_ext","tri_kick"],sets:3,reps:"12–15",u:"kg"},{pool:["pallof","halo"],sets:3,reps:"10／側"},{pool:["pullapart","band_fly"],sets:3,reps:"15"},{pool:["sideplank","hollow","plank"],sets:3,reps:"30 秒"}],
@@ -552,7 +553,7 @@ const SESS = {
       {name:"AMRAP 12 分",desc:"12 分鐘內盡量多輪：每個動作 10 下，照順序做完算一輪。記下總輪數，下次挑戰超越。",rounds:1,reps:"10 下 × 盡量多輪",min:12},
       {name:"階梯 10-8-6-4-2",desc:"每個動作 10 下、全部做完換 8 下⋯一路到 2 下。全程計時，下次試著更快。",rounds:5,reps:"10→2",min:14},
     ],
-    moves:[{pool:["kb_swing","goblet","kb_sdhp"],alt0:"kb_dl",u:"kg"},{pool:["thruster","sq_press"],u:"kg"},{pool:["fast_step","skater","jj"]},{pool:["pushup","mtn","burpee_e"]},{pool:["rev_lunge","sq_pulse"],u:"reps"},{pool:["renegade","band_row"],u:"kg"}],
+    moves:[{pool:["kb_swing","goblet","kb_sdhp"],alt0:"kb_dl",u:"kg"},{pool:["thruster","sq_press"],u:"kg"},{pool:["fast_step","skater","jj"]},{pool:["pushup","mtn","burpee_e"]},{pool:["rev_lunge","sq_pulse","lat_lunge_sw"],u:"reps"},{pool:["renegade","band_row"],u:"kg"}],
     movesShort:[{pool:["bw_squat","sq_pulse"]},{pool:["burpee_e","mtn"]},{pool:["rev_lunge","skater"]},{pool:["pushup","band_ohp"]},{pool:["jj","fast_step"]},{pool:["band_row","band_fly"]}]},
   D:{name:"D · 全身力量 + 間歇",desc:"深蹲、肩推、划船，再加跑步機間歇",
     full:[{pool:["goblet","split","kb_swing","kb_sdhp"],role:"main",alt0:"goblet"},{pool:["db_ohp","db_press"],role:"sec"},{pool:["db_row","renegade"],role:"sec",ps:1},{pool:["hipthrust","sl_bridge"],sets:3,reps:"12"},{pool:["deadbug","birddog","hollow"],sets:3,reps:"10／側"}],
@@ -655,7 +656,8 @@ const credit=s=>s.version==="micro"?0.5:1;
 function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),2200);}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function ytId(u){const m=String(u).match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);return m?m[1]:null;}
-function videoOf(id){const v=(DB.settings.videos||{})[id];return v&&/^https?:\/\//i.test(v)?v:null;}
+function userVideo(id){const v=(DB.settings.videos||{})[id];return v&&/^https?:\/\//i.test(v)?v:null;}
+function videoOf(id){return userVideo(id)||(EX[id]&&EX[id].vid)||null;}
 function videoHTML(id){const u=videoOf(id);if(!u)return "";const y=ytId(u);
   if(EMBED_VIDEO&&y)return `<div class="vid"><div class="frame"><iframe src="https://www.youtube-nocookie.com/embed/${y}" title="${esc(EX[id].n)} ${esc(EX[id].en)} 示範影片" loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen></iframe></div><a class="btn" href="${esc(u)}" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a></div>`;
   return `<div class="vid"><a class="btn" href="${esc(u)}" target="_blank" rel="noopener">▶ 看示範影片${y?"（YouTube）":""} ↗</a></div>`;}
@@ -819,7 +821,7 @@ function renderHistory(){
   const weeks=[];for(let i=11;i>=0;i--){const k=fmtDate(addDays(thisMon,-7*i));weeks.push({k,v:wc[k]||0});}
   drawBars($("#chartWeek"),weeks,goal);
   // lift chart
-  const liftIds=["kb_dl","db_rdl","kb_sumo","kb_sdhp","goblet","hipthrust","rev_lunge","split","db_press","db_ohp","db_row","lat_raise","kb_swing","thruster","suitcase","farmer"];
+  const liftIds=["kb_dl","db_rdl","kb_sumo","kb_sdhp","goblet","hipthrust","rev_lunge","lat_lunge_sw","split","db_press","db_ohp","db_row","lat_raise","kb_swing","thruster","suitcase","farmer"];
   $("#liftSel").innerHTML=liftIds.map(id=>`<option value="${id}" ${id===liftSel?"selected":""}>${esc(EX[id].n)} · ${esc(EX[id].en)}</option>`).join("");
   const pts=[];for(const s of [...DB.sessions].sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id)){const e=(s.exercises||[]).find(x=>x.id===liftSel);if(!e)continue;const ws=e.sets.filter(t=>t.done&&t.w>0).map(t=>t.w);if(ws.length)pts.push({k:s.date,v:Math.max(...ws),rpe:e.rpe});}
   drawLine($("#chartLift"),pts.slice(-20));
@@ -865,7 +867,7 @@ function renderGuide(){
   const used=new Set();const addItems=arr=>(arr||[]).forEach(i=>{(i.pool||[i.id]).forEach(x=>used.add(x));if(i.alt0)used.add(i.alt0);});
   for(const t of ["A","B","C","D","M"]){for(const k of ["full","short","fullFin","shortFin","moves","movesShort"])addItems(SESS[t][k]);WARM[t].forEach(w=>used.add(w[0]));}
   SESS.M.variants.forEach(v=>addItems(v.items));
-  $("#exLib").innerHTML=[...used].map(id=>`<details data-exid="${id}"><summary><span>${esc(EX[id].n)} <span class="en">${esc(EX[id].en)}</span> <small class="muted" style="font-weight:400">${esc(EX[id].eq)}${videoOf(id)?" · ▶ 有影片":""}</small></span></summary><div class="body">${esc(EX[id].cue)}<div style="margin-top:10px">${videoHTML(id)}</div><div class="vidform"><input type="url" inputmode="url" placeholder="貼上示範影片網址（YouTube 或任何連結）" value="${esc(videoOf(id)||"")}" aria-label="${esc(EX[id].n)} 影片網址"><button class="small" data-savevid>儲存</button></div>${videoOf(id)?'<button class="small ghost" data-delvid style="margin-top:6px">移除影片</button>':""}</div></details>`).join("");
+  $("#exLib").innerHTML=[...used].map(id=>`<details data-exid="${id}"><summary><span>${esc(EX[id].n)} <span class="en">${esc(EX[id].en)}</span> <small class="muted" style="font-weight:400">${esc(EX[id].eq)}${videoOf(id)?" · ▶ 有影片":""}</small></span></summary><div class="body">${esc(EX[id].cue)}<div style="margin-top:10px">${videoHTML(id)}</div><div class="vidform"><input type="url" inputmode="url" placeholder="${EX[id].vid?"內建示範影片；貼上網址可覆蓋":"貼上示範影片網址（YouTube 或任何連結）"}" value="${esc(userVideo(id)||"")}" aria-label="${esc(EX[id].n)} 影片網址"><button class="small" data-savevid>儲存</button></div>${userVideo(id)?'<button class="small ghost" data-delvid style="margin-top:6px">移除我貼的影片</button>':""}</div></details>`).join("");
 }
 
 /* ========= SETTINGS TAB ========= */
