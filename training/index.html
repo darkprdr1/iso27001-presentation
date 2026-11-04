@@ -151,6 +151,7 @@ details .body ul{padding-left:18px;margin:6px 0}
 .danger{color:var(--bad)}
 .note{background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--ink)}
 .exlib .cue{display:block}
+.en{font-size:12px;color:var(--ink-3);font-weight:500;letter-spacing:.01em}
 .swap{font-size:12px;padding:2px 8px;min-height:26px;border-radius:999px;color:var(--ink-2)}
 .fmt{background:var(--surface-2);border-radius:10px;padding:10px 12px;display:grid;gap:4px}
 .fmt .fn{font-weight:900;font-size:16px}
@@ -458,67 +459,67 @@ details .body ul{padding-left:18px;margin:6px 0}
 <script>
 /* ========= PROGRAM DATA ========= */
 const EX = {
-  catcow:{n:"貓牛式",eq:"徒手",u:"reps",cue:"四足跪姿。吸氣時腰往下塌、看前方；吐氣時背拱起、看肚臍。每個方向 3–4 秒，當作脊椎的開機動作。"},
-  deadbug:{n:"死蟲式",eq:"徒手",u:"reps",cue:"仰躺，手舉直、膝蓋彎 90 度。吐氣時對側手腳慢慢伸出，腰要全程貼住地面；吸氣收回。腰一離地就是做太快。"},
-  glutebridge:{n:"臀橋",eq:"徒手",u:"reps",cue:"仰躺屈膝，腳跟踩地把髖推到身體一直線，頂點夾臀 2 秒。用屁股出力，不要靠腰往上頂。"},
-  birddog:{n:"鳥狗式",eq:"徒手",u:"reps",cue:"四足跪姿，對側手腳同時伸直、停 3 秒，骨盆不能轉。想像腰上放一杯水，水不能倒。下背穩定度最重要的動作。"},
-  kb_dl:{n:"壺鈴硬舉",eq:"壺鈴",u:"kg",cue:"腳與肩同寬，壺鈴放在雙腳中間。先把屁股往後推、膝微彎、背打直像一塊板子，用臀部與大腿後側把壺鈴拉起來站直，吐氣。下放時先推屁股，不是先彎腰。"},
-  kb_sumo:{n:"壺鈴相撲硬舉",eq:"壺鈴",u:"kg",cue:"腳開比肩寬、腳尖外轉 30 度，壺鈴在雙腳中間。膝蓋朝腳尖方向、上身比一般硬舉更直，用臀部內側把壺鈴拉起。"},
-  db_rdl:{n:"啞鈴羅馬尼亞硬舉",eq:"啞鈴",u:"kg",cue:"雙手持啞鈴站直。膝蓋微彎固定，髖往後推，啞鈴沿著大腿滑到小腿中段、感覺大腿後側拉緊即停；全程背部中立。用臀部把身體拉回來。每下 3 秒下放。"},
-  stepup:{n:"登階",eq:"登階板 + 啞鈴",u:"kg",cue:"整個腳掌踩穩階板，用前腳把身體推上去，後腳不要蹬地。下來時慢（3 秒）。先徒手，穩了再拿啞鈴。"},
-  superman:{n:"俯臥背伸展（超人式）",eq:"徒手",u:"reps",cue:"趴著、手往前伸。手和腳同時抬離地面 2–3 公分、停 2 秒，眼睛看地板，不要仰頭。練的是下背耐力，不是抬得高。"},
-  suitcase:{n:"單手提箱行走",eq:"壺鈴",u:"kg",cue:"一手提壺鈴走路，身體完全不能歪，像頭頂放一杯水。走 30 秒（約 20–30 步）換手。訓練「側核心保護下背」最實用的動作。"},
-  band_gm:{n:"彈力繩早安式",eq:"彈力繩",u:"reps",cue:"繩踩在腳下、繞到肩後。髖往後推、上身前傾到約 45 度（背部打直），再用臀部站直。輕負荷、高次數，當作硬舉的補強。"},
-  goblet:{n:"高腳杯深蹲",eq:"壺鈴 / 啞鈴",u:"kg",cue:"壺鈴抱在胸前，腳尖微外。往下坐到大腿至少與地面平行，膝蓋朝腳尖方向、全程挺胸。站起時吐氣。"},
-  db_row:{n:"單手啞鈴划船",eq:"啞鈴",u:"kg",cue:"一手撐在登階板或椅子上，背打直與地面近平行。另一手把啞鈴拉到腰側，手肘往後不往外，頂點背肌夾緊 1 秒。"},
-  pushup:{n:"伏地挺身",eq:"徒手 / 登階板",u:"reps",cue:"手撐在登階板上可降低難度，撐地面難度較高。身體從頭到腳跟一直線，核心收緊；胸口碰到板子再推起。做不到就把手墊更高，不要跪著做。"},
-  pallof:{n:"帕洛夫推",eq:"彈力繩",u:"reps",cue:"繩固定在門把或柱子，側身站。雙手把繩往前推到伸直、停 2 秒再收回，身體不被繩拉轉。抗旋轉核心是保護下背的關鍵。"},
-  pullapart:{n:"彈力繩肩後拉",eq:"彈力繩",u:"reps",cue:"雙手與肩同高持繩，把繩拉開到碰到胸前，肩胛往後夾。改善圓肩，讓背部線條更好看。"},
-  sideplank:{n:"側棒式",eq:"徒手",u:"sec",cue:"手肘在肩膀正下方，髖抬高讓身體一直線。屁股不要掉。覺得太難可屈膝做。"},
-  farmer:{n:"農夫走路",eq:"啞鈴",u:"kg",cue:"雙手各持啞鈴，肩膀往後下沉、挺胸，有節奏地走。核心像準備被輕輕打一拳一樣收緊。拿你能穩穩走 40 秒的重量。"},
-  kb_swing:{n:"壺鈴盪壺",eq:"壺鈴",u:"kg",cue:"髖像彈簧：屁股往後、壺鈴甩到胯下，再爆發式挺髖讓壺鈴飄到胸口高度。手臂不出力、不聳肩，頂點吐氣。基礎期先用壺鈴硬舉代替，髖屈伸熟練後再加入。"},
-  split:{n:"後腳墊高分腿蹲",eq:"啞鈴 + 登階板",u:"kg",cue:"後腳腳背踩在登階板上，前腿下蹲到大腿近水平，重心放在前腳跟。先徒手，再雙手持啞鈴。"},
-  rev_lunge:{n:"後退弓步",eq:"啞鈴",u:"kg",cue:"一腳往後跨、後膝輕點地面，前腿大腿近水平；用前腳跟站回來。對膝蓋最友善的弓步。"},
-  lat_lunge:{n:"側弓步",eq:"啞鈴",u:"kg",cue:"往側邊跨一大步、屁股往後坐在跨出去的那條腿上，另一腿打直；推回站直。練大腿內外側線條。"},
-  curtsy:{n:"屈膝禮弓步",eq:"啞鈴",u:"kg",cue:"一腳往斜後方交叉跨到另一腳外側，像行屈膝禮，前腿下蹲；前腳推回。主攻臀部側面。"},
-  db_ohp:{n:"啞鈴過頭推",eq:"啞鈴",u:"kg",cue:"站姿、肋骨往下收、核心收緊、屁股微夾。把啞鈴推到耳朵旁上方，不要塌腰往後仰。"},
-  hipthrust:{n:"臀推（上背靠登階板）",eq:"登階板 + 啞鈴",u:"kg",cue:"上背靠登階板，雙腳踩地。髖往上推到身體一直線、頂點夾臀 2 秒、下巴微收。可以把啞鈴放在髖上加重。"},
-  band_walk:{n:"彈力繩側走（怪獸走路）",eq:"彈力繩",u:"reps",cue:"繩套在膝蓋上方或腳踝，半蹲、腳尖朝前，往側邊一步步走，膝蓋全程往外撐。臀部側面會發燙，正常。"},
-  band_kick:{n:"彈力繩後踢",eq:"彈力繩",u:"reps",cue:"繩套腳踝，扶牆站直，一腳往後踢、頂點夾臀 1 秒，上身不前傾。"},
-  calf:{n:"登階板提踵",eq:"登階板 + 啞鈴",u:"reps",cue:"前腳掌踩在階板邊緣、腳跟懸空，慢慢往下放到底再踮到最高、頂點停 1 秒。小腿線條。"},
-  db_press:{n:"啞鈴地板臥推",eq:"啞鈴",u:"kg",cue:"仰躺、膝蓋彎，手肘約 45 度把啞鈴往上推到胸口正上方；下放到上臂碰地。胸與手臂後側。"},
-  db_fly:{n:"啞鈴俯身反向飛鳥",eq:"啞鈴",u:"kg",cue:"髖往後推、上身前傾 45 度、背打直。手肘微彎把啞鈴往外側打開到與肩同高，肩胛夾緊。後肩與上背線條。"},
-  lat_raise:{n:"啞鈴側平舉",eq:"啞鈴",u:"kg",cue:"手肘微彎、把啞鈴往側邊抬到與肩同高，像倒水一樣小指略高，慢放 3 秒。肩膀線條用輕重量、高次數。"},
-  curl:{n:"啞鈴彎舉",eq:"啞鈴",u:"kg",cue:"手肘貼身體不前移，把啞鈴捲到肩前、慢放 3 秒。不要靠身體晃。"},
-  tri_ext:{n:"啞鈴過頭臂屈伸",eq:"啞鈴",u:"kg",cue:"雙手捧一顆啞鈴舉過頭，手肘朝前固定、啞鈴往後腦下放再推直。手臂後側（蝴蝶袖）。"},
-  tri_kick:{n:"啞鈴後踢（三頭）",eq:"啞鈴",u:"kg",cue:"俯身、上臂貼身與地面平行，只動前臂把啞鈴往後推直、頂點停 1 秒。"},
-  renegade:{n:"伏地划船",eq:"啞鈴",u:"kg",cue:"雙手撐在啞鈴上成伏地挺身姿勢（腳開寬一點），一手把啞鈴拉到腰側，骨盆不轉。上背＋核心一次練。"},
-  halo:{n:"壺鈴繞頭",eq:"壺鈴",u:"reps",cue:"倒握壺鈴在胸前，繞著頭畫圈、貼著頭走，核心收緊、肋骨不開。肩膀活動度與核心。"},
-  hollow:{n:"空心撐體",eq:"徒手",u:"sec",cue:"仰躺、腰貼地，手腳抬起成淺碗狀。撐住不動；腰一離地就把腳抬高一點。"},
-  thruster:{n:"啞鈴推蹲",eq:"啞鈴",u:"kg",cue:"啞鈴扛在肩上深蹲，站起的勢頭順勢推過頭。全身一起動，心跳馬上上來。"},
-  fast_step:{n:"登階板快踏",eq:"登階板",u:"reps",cue:"一腳上、一腳上、一腳下、一腳下，用快節奏踏，每 10 下換領先腳。膝蓋微彎落地輕。"},
-  mtn:{n:"登山者",eq:"徒手",u:"reps",cue:"伏地挺身姿勢，膝蓋輪流往胸口帶，屁股不要翹高。可以手撐登階板降低難度。"},
-  sq_press:{n:"深蹲轉肩推（壺鈴）",eq:"壺鈴",u:"kg",cue:"高腳杯深蹲站起後把壺鈴推過頭，再收回胸前下蹲。"},
-  jj:{n:"開合跳",eq:"徒手",u:"reps",cue:"膝蓋微彎、落地輕。覺得衝擊太大就改成踏步開合（一次一腳）。"},
-  skater:{n:"溜冰跳",eq:"徒手",u:"reps",cue:"側向單腳跳到另一腳、後腳往後交叉點地，像速滑。可以不跳改成大步側跨。"},
-  plank:{n:"棒式",eq:"徒手",u:"sec",cue:"手肘在肩下、屁股夾緊、肋骨收，身體一直線。抖是正常的。"},
-  tm_incline:{n:"跑步機斜坡快走",eq:"跑步機",u:"min",cue:"坡度 6–8%，速度 5–6 km/h，「可以講話但唱不了歌」的強度。不要扶手。"},
-  tm_interval:{n:"跑步機 1:2 間歇",eq:"跑步機",u:"min",cue:"1 分鐘快（快走或慢跑、坡度 3%）＋ 2 分鐘慢走，重複 5 回，共 15 分鐘。"},
-  tm_pyramid:{n:"跑步機金字塔",eq:"跑步機",u:"min",cue:"快 30 秒 / 慢 60 秒 → 快 60 / 慢 60 → 快 90 / 慢 60 → 快 60 / 慢 60 → 快 30 / 慢 60，約 12 分鐘。速度自己選，快的時候要喘。"},
-  tm_3030:{n:"跑步機 30/30",eq:"跑步機",u:"min",cue:"30 秒快（慢跑或坡度 8% 快走）／ 30 秒慢，重複 12 回共 12 分鐘。"},
-  tm_hill:{n:"跑步機爬坡階梯",eq:"跑步機",u:"min",cue:"速度固定 5.5 km/h，坡度每 2 分鐘 +2%：2 → 4 → 6 → 8 → 10%，再每 2 分鐘降回來，共 18 分鐘。"},
-  sl_rdl:{n:"單腳羅馬尼亞硬舉",eq:"徒手 / 啞鈴",u:"reps",cue:"單腳站、另一腳往後伸，上身前傾到接近與地面平行，背部打直、骨盆不轉。可以手扶牆。"},
-  band_row:{n:"彈力繩划船",eq:"彈力繩",u:"reps",cue:"繩套在門把上或腳底，手肘往後拉到腰側、肩胛夾緊 1 秒。"},
-  band_ohp:{n:"彈力繩肩推",eq:"彈力繩",u:"reps",cue:"繩踩腳下，雙手握繩從肩膀推到頭頂上方；核心收緊不塌腰。"},
-  band_curl:{n:"彈力繩彎舉",eq:"彈力繩",u:"reps",cue:"繩踩腳下，手肘貼身把繩捲到肩前、慢放。"},
-  band_tri:{n:"彈力繩下壓（三頭）",eq:"彈力繩",u:"reps",cue:"繩固定在高處（門上方）或一手壓在肩上，另一手把繩往下壓直。"},
-  band_lat:{n:"彈力繩側平舉",eq:"彈力繩",u:"reps",cue:"繩踩腳下、雙手往側邊抬到與肩同高，慢放。"},
-  band_fly:{n:"彈力繩反向飛鳥",eq:"彈力繩",u:"reps",cue:"雙手持繩在身前伸直，往兩側打開到身體兩側，肩胛夾緊。"},
-  bw_squat:{n:"徒手深蹲",eq:"徒手",u:"reps",cue:"雙手前伸平衡，坐到大腿與地面平行，膝蓋朝腳尖；下放 3 秒。"},
-  sq_pulse:{n:"深蹲脈衝",eq:"徒手",u:"reps",cue:"蹲到最低點，在底部小幅上下彈動，大腿會燒。"},
-  sl_bridge:{n:"單腳臀橋",eq:"徒手",u:"reps",cue:"臀橋姿勢，一腳伸直離地，用另一腳把髖推到一直線、頂點停 2 秒。"},
-  stairs:{n:"爬樓梯間歇",eq:"樓梯",u:"min",cue:"快走上樓 1 分鐘、慢走下樓 1 分鐘，重複 5 回。飯店沒健身房時的心肺替代。"},
-  burpee_e:{n:"簡易波比",eq:"徒手",u:"reps",cue:"蹲下、雙手撐地（可撐登階板）、雙腳往後踩（一次一腳也可以）、再踩回站起、踮腳伸手。不用跳。"},
+  catcow:{n:"貓牛式",en:"Cat-Cow",eq:"徒手",u:"reps",cue:"四足跪姿。吸氣時腰往下塌、看前方；吐氣時背拱起、看肚臍。每個方向 3–4 秒，當作脊椎的開機動作。"},
+  deadbug:{n:"死蟲式",en:"Dead Bug",eq:"徒手",u:"reps",cue:"仰躺，手舉直、膝蓋彎 90 度。吐氣時對側手腳慢慢伸出，腰要全程貼住地面；吸氣收回。腰一離地就是做太快。"},
+  glutebridge:{n:"臀橋",en:"Glute Bridge",eq:"徒手",u:"reps",cue:"仰躺屈膝，腳跟踩地把髖推到身體一直線，頂點夾臀 2 秒。用屁股出力，不要靠腰往上頂。"},
+  birddog:{n:"鳥狗式",en:"Bird Dog",eq:"徒手",u:"reps",cue:"四足跪姿，對側手腳同時伸直、停 3 秒，骨盆不能轉。想像腰上放一杯水，水不能倒。下背穩定度最重要的動作。"},
+  kb_dl:{n:"壺鈴硬舉",en:"Kettlebell Deadlift",eq:"壺鈴",u:"kg",cue:"腳與肩同寬，壺鈴放在雙腳中間。先把屁股往後推、膝微彎、背打直像一塊板子，用臀部與大腿後側把壺鈴拉起來站直，吐氣。下放時先推屁股，不是先彎腰。"},
+  kb_sumo:{n:"壺鈴相撲硬舉",en:"Kettlebell Sumo Deadlift",eq:"壺鈴",u:"kg",cue:"腳開比肩寬、腳尖外轉 30 度，壺鈴在雙腳中間。膝蓋朝腳尖方向、上身比一般硬舉更直，用臀部內側把壺鈴拉起。"},
+  db_rdl:{n:"啞鈴羅馬尼亞硬舉",en:"Dumbbell Romanian Deadlift",eq:"啞鈴",u:"kg",cue:"雙手持啞鈴站直。膝蓋微彎固定，髖往後推，啞鈴沿著大腿滑到小腿中段、感覺大腿後側拉緊即停；全程背部中立。用臀部把身體拉回來。每下 3 秒下放。"},
+  stepup:{n:"登階",en:"Step-Up",eq:"登階板 + 啞鈴",u:"kg",cue:"整個腳掌踩穩階板，用前腳把身體推上去，後腳不要蹬地。下來時慢（3 秒）。先徒手，穩了再拿啞鈴。"},
+  superman:{n:"俯臥背伸展（超人式）",en:"Superman / Back Extension",eq:"徒手",u:"reps",cue:"趴著、手往前伸。手和腳同時抬離地面 2–3 公分、停 2 秒，眼睛看地板，不要仰頭。練的是下背耐力，不是抬得高。"},
+  suitcase:{n:"單手提箱行走",en:"Suitcase Carry",eq:"壺鈴",u:"kg",cue:"一手提壺鈴走路，身體完全不能歪，像頭頂放一杯水。走 30 秒（約 20–30 步）換手。訓練「側核心保護下背」最實用的動作。"},
+  band_gm:{n:"彈力繩早安式",en:"Band Good Morning",eq:"彈力繩",u:"reps",cue:"繩踩在腳下、繞到肩後。髖往後推、上身前傾到約 45 度（背部打直），再用臀部站直。輕負荷、高次數，當作硬舉的補強。"},
+  goblet:{n:"高腳杯深蹲",en:"Goblet Squat",eq:"壺鈴 / 啞鈴",u:"kg",cue:"壺鈴抱在胸前，腳尖微外。往下坐到大腿至少與地面平行，膝蓋朝腳尖方向、全程挺胸。站起時吐氣。"},
+  db_row:{n:"單手啞鈴划船",en:"Single-Arm Dumbbell Row",eq:"啞鈴",u:"kg",cue:"一手撐在登階板或椅子上，背打直與地面近平行。另一手把啞鈴拉到腰側，手肘往後不往外，頂點背肌夾緊 1 秒。"},
+  pushup:{n:"伏地挺身",en:"Push-Up",eq:"徒手 / 登階板",u:"reps",cue:"手撐在登階板上可降低難度，撐地面難度較高。身體從頭到腳跟一直線，核心收緊；胸口碰到板子再推起。做不到就把手墊更高，不要跪著做。"},
+  pallof:{n:"帕洛夫推",en:"Pallof Press",eq:"彈力繩",u:"reps",cue:"繩固定在門把或柱子，側身站。雙手把繩往前推到伸直、停 2 秒再收回，身體不被繩拉轉。抗旋轉核心是保護下背的關鍵。"},
+  pullapart:{n:"彈力繩肩後拉",en:"Band Pull-Apart",eq:"彈力繩",u:"reps",cue:"雙手與肩同高持繩，把繩拉開到碰到胸前，肩胛往後夾。改善圓肩，讓背部線條更好看。"},
+  sideplank:{n:"側棒式",en:"Side Plank",eq:"徒手",u:"sec",cue:"手肘在肩膀正下方，髖抬高讓身體一直線。屁股不要掉。覺得太難可屈膝做。"},
+  farmer:{n:"農夫走路",en:"Farmer's Carry",eq:"啞鈴",u:"kg",cue:"雙手各持啞鈴，肩膀往後下沉、挺胸，有節奏地走。核心像準備被輕輕打一拳一樣收緊。拿你能穩穩走 40 秒的重量。"},
+  kb_swing:{n:"壺鈴盪壺",en:"Kettlebell Swing",eq:"壺鈴",u:"kg",cue:"髖像彈簧：屁股往後、壺鈴甩到胯下，再爆發式挺髖讓壺鈴飄到胸口高度。手臂不出力、不聳肩，頂點吐氣。基礎期先用壺鈴硬舉代替，髖屈伸熟練後再加入。"},
+  split:{n:"後腳墊高分腿蹲",en:"Bulgarian Split Squat",eq:"啞鈴 + 登階板",u:"kg",cue:"後腳腳背踩在登階板上，前腿下蹲到大腿近水平，重心放在前腳跟。先徒手，再雙手持啞鈴。"},
+  rev_lunge:{n:"後退弓步",en:"Reverse Lunge",eq:"啞鈴",u:"kg",cue:"一腳往後跨、後膝輕點地面，前腿大腿近水平；用前腳跟站回來。對膝蓋最友善的弓步。"},
+  lat_lunge:{n:"側弓步",en:"Lateral Lunge",eq:"啞鈴",u:"kg",cue:"往側邊跨一大步、屁股往後坐在跨出去的那條腿上，另一腿打直；推回站直。練大腿內外側線條。"},
+  curtsy:{n:"屈膝禮弓步",en:"Curtsy Lunge",eq:"啞鈴",u:"kg",cue:"一腳往斜後方交叉跨到另一腳外側，像行屈膝禮，前腿下蹲；前腳推回。主攻臀部側面。"},
+  db_ohp:{n:"啞鈴過頭推",en:"Dumbbell Overhead Press",eq:"啞鈴",u:"kg",cue:"站姿、肋骨往下收、核心收緊、屁股微夾。把啞鈴推到耳朵旁上方，不要塌腰往後仰。"},
+  hipthrust:{n:"臀推（上背靠登階板）",en:"Hip Thrust",eq:"登階板 + 啞鈴",u:"kg",cue:"上背靠登階板，雙腳踩地。髖往上推到身體一直線、頂點夾臀 2 秒、下巴微收。可以把啞鈴放在髖上加重。"},
+  band_walk:{n:"彈力繩側走（怪獸走路）",en:"Band Lateral Walk (Monster Walk)",eq:"彈力繩",u:"reps",cue:"繩套在膝蓋上方或腳踝，半蹲、腳尖朝前，往側邊一步步走，膝蓋全程往外撐。臀部側面會發燙，正常。"},
+  band_kick:{n:"彈力繩後踢",en:"Band Kickback",eq:"彈力繩",u:"reps",cue:"繩套腳踝，扶牆站直，一腳往後踢、頂點夾臀 1 秒，上身不前傾。"},
+  calf:{n:"登階板提踵",en:"Step Calf Raise",eq:"登階板 + 啞鈴",u:"reps",cue:"前腳掌踩在階板邊緣、腳跟懸空，慢慢往下放到底再踮到最高、頂點停 1 秒。小腿線條。"},
+  db_press:{n:"啞鈴地板臥推",en:"Dumbbell Floor Press",eq:"啞鈴",u:"kg",cue:"仰躺、膝蓋彎，手肘約 45 度把啞鈴往上推到胸口正上方；下放到上臂碰地。胸與手臂後側。"},
+  db_fly:{n:"啞鈴俯身反向飛鳥",en:"Bent-Over Reverse Fly",eq:"啞鈴",u:"kg",cue:"髖往後推、上身前傾 45 度、背打直。手肘微彎把啞鈴往外側打開到與肩同高，肩胛夾緊。後肩與上背線條。"},
+  lat_raise:{n:"啞鈴側平舉",en:"Dumbbell Lateral Raise",eq:"啞鈴",u:"kg",cue:"手肘微彎、把啞鈴往側邊抬到與肩同高，像倒水一樣小指略高，慢放 3 秒。肩膀線條用輕重量、高次數。"},
+  curl:{n:"啞鈴彎舉",en:"Dumbbell Biceps Curl",eq:"啞鈴",u:"kg",cue:"手肘貼身體不前移，把啞鈴捲到肩前、慢放 3 秒。不要靠身體晃。"},
+  tri_ext:{n:"啞鈴過頭臂屈伸",en:"Overhead Triceps Extension",eq:"啞鈴",u:"kg",cue:"雙手捧一顆啞鈴舉過頭，手肘朝前固定、啞鈴往後腦下放再推直。手臂後側（蝴蝶袖）。"},
+  tri_kick:{n:"啞鈴後踢（三頭）",en:"Triceps Kickback",eq:"啞鈴",u:"kg",cue:"俯身、上臂貼身與地面平行，只動前臂把啞鈴往後推直、頂點停 1 秒。"},
+  renegade:{n:"伏地划船",en:"Renegade Row",eq:"啞鈴",u:"kg",cue:"雙手撐在啞鈴上成伏地挺身姿勢（腳開寬一點），一手把啞鈴拉到腰側，骨盆不轉。上背＋核心一次練。"},
+  halo:{n:"壺鈴繞頭",en:"Kettlebell Halo",eq:"壺鈴",u:"reps",cue:"倒握壺鈴在胸前，繞著頭畫圈、貼著頭走，核心收緊、肋骨不開。肩膀活動度與核心。"},
+  hollow:{n:"空心撐體",en:"Hollow Hold",eq:"徒手",u:"sec",cue:"仰躺、腰貼地，手腳抬起成淺碗狀。撐住不動；腰一離地就把腳抬高一點。"},
+  thruster:{n:"啞鈴推蹲",en:"Dumbbell Thruster",eq:"啞鈴",u:"kg",cue:"啞鈴扛在肩上深蹲，站起的勢頭順勢推過頭。全身一起動，心跳馬上上來。"},
+  fast_step:{n:"登階板快踏",en:"Fast Step-Ups",eq:"登階板",u:"reps",cue:"一腳上、一腳上、一腳下、一腳下，用快節奏踏，每 10 下換領先腳。膝蓋微彎落地輕。"},
+  mtn:{n:"登山者",en:"Mountain Climber",eq:"徒手",u:"reps",cue:"伏地挺身姿勢，膝蓋輪流往胸口帶，屁股不要翹高。可以手撐登階板降低難度。"},
+  sq_press:{n:"深蹲轉肩推（壺鈴）",en:"Squat to Press",eq:"壺鈴",u:"kg",cue:"高腳杯深蹲站起後把壺鈴推過頭，再收回胸前下蹲。"},
+  jj:{n:"開合跳",en:"Jumping Jacks",eq:"徒手",u:"reps",cue:"膝蓋微彎、落地輕。覺得衝擊太大就改成踏步開合（一次一腳）。"},
+  skater:{n:"溜冰跳",en:"Skater Jumps",eq:"徒手",u:"reps",cue:"側向單腳跳到另一腳、後腳往後交叉點地，像速滑。可以不跳改成大步側跨。"},
+  plank:{n:"棒式",en:"Plank",eq:"徒手",u:"sec",cue:"手肘在肩下、屁股夾緊、肋骨收，身體一直線。抖是正常的。"},
+  tm_incline:{n:"跑步機斜坡快走",en:"Treadmill Incline Walk",eq:"跑步機",u:"min",cue:"坡度 6–8%，速度 5–6 km/h，「可以講話但唱不了歌」的強度。不要扶手。"},
+  tm_interval:{n:"跑步機 1:2 間歇",en:"Treadmill 1:2 Intervals",eq:"跑步機",u:"min",cue:"1 分鐘快（快走或慢跑、坡度 3%）＋ 2 分鐘慢走，重複 5 回，共 15 分鐘。"},
+  tm_pyramid:{n:"跑步機金字塔",en:"Treadmill Pyramid Intervals",eq:"跑步機",u:"min",cue:"快 30 秒 / 慢 60 秒 → 快 60 / 慢 60 → 快 90 / 慢 60 → 快 60 / 慢 60 → 快 30 / 慢 60，約 12 分鐘。速度自己選，快的時候要喘。"},
+  tm_3030:{n:"跑步機 30/30",en:"Treadmill 30/30 Intervals",eq:"跑步機",u:"min",cue:"30 秒快（慢跑或坡度 8% 快走）／ 30 秒慢，重複 12 回共 12 分鐘。"},
+  tm_hill:{n:"跑步機爬坡階梯",en:"Treadmill Hill Ladder",eq:"跑步機",u:"min",cue:"速度固定 5.5 km/h，坡度每 2 分鐘 +2%：2 → 4 → 6 → 8 → 10%，再每 2 分鐘降回來，共 18 分鐘。"},
+  sl_rdl:{n:"單腳羅馬尼亞硬舉",en:"Single-Leg Romanian Deadlift",eq:"徒手 / 啞鈴",u:"reps",cue:"單腳站、另一腳往後伸，上身前傾到接近與地面平行，背部打直、骨盆不轉。可以手扶牆。"},
+  band_row:{n:"彈力繩划船",en:"Band Row",eq:"彈力繩",u:"reps",cue:"繩套在門把上或腳底，手肘往後拉到腰側、肩胛夾緊 1 秒。"},
+  band_ohp:{n:"彈力繩肩推",en:"Band Overhead Press",eq:"彈力繩",u:"reps",cue:"繩踩腳下，雙手握繩從肩膀推到頭頂上方；核心收緊不塌腰。"},
+  band_curl:{n:"彈力繩彎舉",en:"Band Biceps Curl",eq:"彈力繩",u:"reps",cue:"繩踩腳下，手肘貼身把繩捲到肩前、慢放。"},
+  band_tri:{n:"彈力繩下壓（三頭）",en:"Band Triceps Pressdown",eq:"彈力繩",u:"reps",cue:"繩固定在高處（門上方）或一手壓在肩上，另一手把繩往下壓直。"},
+  band_lat:{n:"彈力繩側平舉",en:"Band Lateral Raise",eq:"彈力繩",u:"reps",cue:"繩踩腳下、雙手往側邊抬到與肩同高，慢放。"},
+  band_fly:{n:"彈力繩反向飛鳥",en:"Band Reverse Fly",eq:"彈力繩",u:"reps",cue:"雙手持繩在身前伸直，往兩側打開到身體兩側，肩胛夾緊。"},
+  bw_squat:{n:"徒手深蹲",en:"Bodyweight Squat",eq:"徒手",u:"reps",cue:"雙手前伸平衡，坐到大腿與地面平行，膝蓋朝腳尖；下放 3 秒。"},
+  sq_pulse:{n:"深蹲脈衝",en:"Squat Pulse",eq:"徒手",u:"reps",cue:"蹲到最低點，在底部小幅上下彈動，大腿會燒。"},
+  sl_bridge:{n:"單腳臀橋",en:"Single-Leg Glute Bridge",eq:"徒手",u:"reps",cue:"臀橋姿勢，一腳伸直離地，用另一腳把髖推到一直線、頂點停 2 秒。"},
+  stairs:{n:"爬樓梯間歇",en:"Stair Intervals",eq:"樓梯",u:"min",cue:"快走上樓 1 分鐘、慢走下樓 1 分鐘，重複 5 回。飯店沒健身房時的心肺替代。"},
+  burpee_e:{n:"簡易波比",en:"Easy Burpee",eq:"徒手",u:"reps",cue:"蹲下、雙手撐地（可撐登階板）、雙腳往後踩（一次一腳也可以）、再踩回站起、踮腳伸手。不用跳。"},
 };
 const WARM = {
   A:[["catcow","1 × 8"],["glutebridge","1 × 12"],["band_walk","1 × 10／側"],["birddog","1 × 6／側"]],
@@ -591,7 +592,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 function ytId(u){const m=String(u).match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);return m?m[1]:null;}
 function videoOf(id){const v=(DB.settings.videos||{})[id];return v&&/^https?:\/\//i.test(v)?v:null;}
 function videoHTML(id){const u=videoOf(id);if(!u)return "";const y=ytId(u);
-  if(EMBED_VIDEO&&y)return `<div class="vid"><div class="frame"><iframe src="https://www.youtube-nocookie.com/embed/${y}" title="${esc(EX[id].n)} 示範影片" loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen></iframe></div><a class="btn" href="${esc(u)}" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a></div>`;
+  if(EMBED_VIDEO&&y)return `<div class="vid"><div class="frame"><iframe src="https://www.youtube-nocookie.com/embed/${y}" title="${esc(EX[id].n)} ${esc(EX[id].en)} 示範影片" loading="lazy" allow="accelerometer; encrypted-media; picture-in-picture" allowfullscreen></iframe></div><a class="btn" href="${esc(u)}" target="_blank" rel="noopener">在 YouTube 開啟 ↗</a></div>`;
   return `<div class="vid"><a class="btn" href="${esc(u)}" target="_blank" rel="noopener">▶ 看示範影片${y?"（YouTube）":""} ↗</a></div>`;}
 
 /* ========= PROGRESSION STATE ========= */
@@ -655,7 +656,7 @@ function renderToday(){
   $("#nextTitle").innerHTML=`<span class="pill ${type}">${type==="M"?"微量":type}</span> ${esc(type==="M"?mv.name:S.name.replace(/^[ABCD] · /,""))}`;
   $("#nextDesc").textContent=type==="M"?mv.desc:`${S.desc} · ${p.phase.focus}`;
   $("#btnPrevType").hidden=cur.version==="micro";
-  $("#warmList").innerHTML=WARM[type].map(([id,rx])=>`<li><span>${esc(EX[id].n)}</span><span class="num muted">${esc(rx)}</span></li>`).join("");
+  $("#warmList").innerHTML=WARM[type].map(([id,rx])=>`<li><span>${esc(EX[id].n)} <span class="en">${esc(EX[id].en)}</span></span><span class="num muted">${esc(rx)}</span></li>`).join("");
   let items,fins=[],fmtHTML="";
   if(type==="M"){items=mv.items;}
   else if(type==="C"){const pool=cur.version==="full"?S.moves:S.movesShort;items=pool.map(m=>({...m,sets:fmt.rounds,reps:fmt.reps}));fmtHTML=`<div class="fmt" style="margin-bottom:8px"><span class="fn">${esc(fmt.name)}</span><span class="muted" style="font-size:13px">${esc(fmt.desc)}</span></div>`;}
@@ -688,7 +689,7 @@ function exHTML(it,i,p){
   }
   const rpeBtns=sc.rpe!==null?`<div class="rpe">RPE ${[6,7,8,9,10].map(v=>`<button class="small" data-rpe="${v}" aria-pressed="false">${v}</button>`).join("")}<small>目標 ${sc.rpe}</small></div>`:"";
   return `<div class="ex" data-ex="${id}" data-role="${it.role||""}" data-slot="${i}">
-    <div class="head"><button class="ghost" style="border:0;padding:0;text-align:left;min-height:0" data-toggle><span class="name">${esc(ex.n)}</span> <small class="muted">${esc(ex.eq)}</small>${videoOf(id)?' <span class="pill" style="font-size:11px">▶ 影片</span>':""}</button>
+    <div class="head"><button class="ghost" style="border:0;padding:0;text-align:left;min-height:0" data-toggle><span class="name">${esc(ex.n)}</span> <span class="en">${esc(ex.en)}</span> <small class="muted">${esc(ex.eq)}</small>${videoOf(id)?' <span class="pill" style="font-size:11px">▶ 影片</span>':""}</button>
       <span class="row" style="gap:6px;flex-wrap:nowrap"><span class="rx num">${sc.sets} × ${esc(sc.reps)}</span>${canSwap?`<button class="small ghost swap" data-swap="${i}" title="換一個動作">換</button>`:""}</span></div>
     <div class="cue">${esc(ex.cue)}${videoHTML(id)}</div>
     ${sug?`<div class="note">${esc(sug.text)} <span class="muted num">（${sug.date}）</span></div>`:(unit==="kg"?`<div class="muted" style="font-size:13px">第一次：選一個能穩穩做完所有組、最後 2 下有點吃力的重量。</div>`:"")}
@@ -754,7 +755,7 @@ function renderHistory(){
   drawBars($("#chartWeek"),weeks,goal);
   // lift chart
   const liftIds=["kb_dl","db_rdl","kb_sumo","goblet","hipthrust","rev_lunge","split","db_press","db_ohp","db_row","lat_raise","kb_swing","thruster","suitcase","farmer"];
-  $("#liftSel").innerHTML=liftIds.map(id=>`<option value="${id}" ${id===liftSel?"selected":""}>${esc(EX[id].n)}</option>`).join("");
+  $("#liftSel").innerHTML=liftIds.map(id=>`<option value="${id}" ${id===liftSel?"selected":""}>${esc(EX[id].n)} · ${esc(EX[id].en)}</option>`).join("");
   const pts=[];for(const s of [...DB.sessions].sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id)){const e=(s.exercises||[]).find(x=>x.id===liftSel);if(!e)continue;const ws=e.sets.filter(t=>t.done&&t.w>0).map(t=>t.w);if(ws.length)pts.push({k:s.date,v:Math.max(...ws),rpe:e.rpe});}
   drawLine($("#chartLift"),pts.slice(-20));
   // metrics
@@ -799,7 +800,7 @@ function renderGuide(){
   const used=new Set();const addItems=arr=>(arr||[]).forEach(i=>{(i.pool||[i.id]).forEach(x=>used.add(x));if(i.alt0)used.add(i.alt0);});
   for(const t of ["A","B","C","D","M"]){for(const k of ["full","short","fullFin","shortFin","moves","movesShort"])addItems(SESS[t][k]);WARM[t].forEach(w=>used.add(w[0]));}
   SESS.M.variants.forEach(v=>addItems(v.items));
-  $("#exLib").innerHTML=[...used].map(id=>`<details data-exid="${id}"><summary>${esc(EX[id].n)} <small class="muted" style="font-weight:400">${esc(EX[id].eq)}${videoOf(id)?" · ▶ 有影片":""}</small></summary><div class="body">${esc(EX[id].cue)}<div style="margin-top:10px">${videoHTML(id)}</div><div class="vidform"><input type="url" inputmode="url" placeholder="貼上示範影片網址（YouTube 或任何連結）" value="${esc(videoOf(id)||"")}" aria-label="${esc(EX[id].n)} 影片網址"><button class="small" data-savevid>儲存</button></div>${videoOf(id)?'<button class="small ghost" data-delvid style="margin-top:6px">移除影片</button>':""}</div></details>`).join("");
+  $("#exLib").innerHTML=[...used].map(id=>`<details data-exid="${id}"><summary><span>${esc(EX[id].n)} <span class="en">${esc(EX[id].en)}</span> <small class="muted" style="font-weight:400">${esc(EX[id].eq)}${videoOf(id)?" · ▶ 有影片":""}</small></span></summary><div class="body">${esc(EX[id].cue)}<div style="margin-top:10px">${videoHTML(id)}</div><div class="vidform"><input type="url" inputmode="url" placeholder="貼上示範影片網址（YouTube 或任何連結）" value="${esc(videoOf(id)||"")}" aria-label="${esc(EX[id].n)} 影片網址"><button class="small" data-savevid>儲存</button></div>${videoOf(id)?'<button class="small ghost" data-delvid style="margin-top:6px">移除影片</button>':""}</div></details>`).join("");
 }
 
 /* ========= SETTINGS TAB ========= */

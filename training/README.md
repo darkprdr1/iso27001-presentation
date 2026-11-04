@@ -51,6 +51,72 @@
 **飯店版**：每堂皆有彈力繩＋徒手版本，同樣有輪換。
 **微量版**：核心五式（鳥狗、死蟲、側棒式、臀橋、超人式）與燃脂十分（開合跳、深蹲、登山者、弓步、棒式各 40 秒 × 2 輪）交替。
 
+## 動作中英對照
+
+| 中文 | English |
+|---|---|
+| 貓牛式 | Cat-Cow |
+| 死蟲式 | Dead Bug |
+| 臀橋 | Glute Bridge |
+| 鳥狗式 | Bird Dog |
+| 壺鈴硬舉 | Kettlebell Deadlift |
+| 壺鈴相撲硬舉 | Kettlebell Sumo Deadlift |
+| 啞鈴羅馬尼亞硬舉 | Dumbbell Romanian Deadlift |
+| 登階 | Step-Up |
+| 俯臥背伸展（超人式） | Superman / Back Extension |
+| 單手提箱行走 | Suitcase Carry |
+| 彈力繩早安式 | Band Good Morning |
+| 高腳杯深蹲 | Goblet Squat |
+| 單手啞鈴划船 | Single-Arm Dumbbell Row |
+| 伏地挺身 | Push-Up |
+| 帕洛夫推 | Pallof Press |
+| 彈力繩肩後拉 | Band Pull-Apart |
+| 側棒式 | Side Plank |
+| 農夫走路 | Farmer's Carry |
+| 壺鈴盪壺 | Kettlebell Swing |
+| 後腳墊高分腿蹲 | Bulgarian Split Squat |
+| 後退弓步 | Reverse Lunge |
+| 側弓步 | Lateral Lunge |
+| 屈膝禮弓步 | Curtsy Lunge |
+| 啞鈴過頭推 | Dumbbell Overhead Press |
+| 臀推（上背靠登階板） | Hip Thrust |
+| 彈力繩側走（怪獸走路） | Band Lateral Walk (Monster Walk) |
+| 彈力繩後踢 | Band Kickback |
+| 登階板提踵 | Step Calf Raise |
+| 啞鈴地板臥推 | Dumbbell Floor Press |
+| 啞鈴俯身反向飛鳥 | Bent-Over Reverse Fly |
+| 啞鈴側平舉 | Dumbbell Lateral Raise |
+| 啞鈴彎舉 | Dumbbell Biceps Curl |
+| 啞鈴過頭臂屈伸 | Overhead Triceps Extension |
+| 啞鈴後踢（三頭） | Triceps Kickback |
+| 伏地划船 | Renegade Row |
+| 壺鈴繞頭 | Kettlebell Halo |
+| 空心撐體 | Hollow Hold |
+| 啞鈴推蹲 | Dumbbell Thruster |
+| 登階板快踏 | Fast Step-Ups |
+| 登山者 | Mountain Climber |
+| 深蹲轉肩推（壺鈴） | Squat to Press |
+| 開合跳 | Jumping Jacks |
+| 溜冰跳 | Skater Jumps |
+| 棒式 | Plank |
+| 跑步機斜坡快走 | Treadmill Incline Walk |
+| 跑步機 1:2 間歇 | Treadmill 1:2 Intervals |
+| 跑步機金字塔 | Treadmill Pyramid Intervals |
+| 跑步機 30/30 | Treadmill 30/30 Intervals |
+| 跑步機爬坡階梯 | Treadmill Hill Ladder |
+| 單腳羅馬尼亞硬舉 | Single-Leg Romanian Deadlift |
+| 彈力繩划船 | Band Row |
+| 彈力繩肩推 | Band Overhead Press |
+| 彈力繩彎舉 | Band Biceps Curl |
+| 彈力繩下壓（三頭） | Band Triceps Pressdown |
+| 彈力繩側平舉 | Band Lateral Raise |
+| 彈力繩反向飛鳥 | Band Reverse Fly |
+| 徒手深蹲 | Bodyweight Squat |
+| 深蹲脈衝 | Squat Pulse |
+| 單腳臀橋 | Single-Leg Glute Bridge |
+| 爬樓梯間歇 | Stair Intervals |
+| 簡易波比 | Easy Burpee |
+
 ## 重量調整規則
 
 - 所有組達到目標次數且 RPE ≤ 7 → 下次 +1–2 kg（壺鈴固定重量則每組 +1 下，達上限再換重壺鈴）
