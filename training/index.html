@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0F6E6D">
-<title>下背強化訓練系統</title>
+<title>全身體雕訓練系統</title>
 
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap">
 <style>
@@ -146,11 +146,21 @@ details .body ul{padding-left:18px;margin:6px 0}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
 .kv dt{color:var(--ink-3)}
 .kv dd{margin:0}
-.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:700;z-index:40;opacity:0;transition:opacity .2s}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:700;z-index:40;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
 .danger{color:var(--bad)}
 .note{background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--ink)}
 .exlib .cue{display:block}
+.swap{font-size:12px;padding:2px 8px;min-height:26px;border-radius:999px;color:var(--ink-2)}
+.fmt{background:var(--surface-2);border-radius:10px;padding:10px 12px;display:grid;gap:4px}
+.fmt .fn{font-weight:900;font-size:16px}
+.bonus{display:grid;gap:8px}
+.bonus .pick{font-weight:700;font-size:16px;min-height:24px}
+.badges{display:flex;flex-wrap:wrap;gap:6px}
+.badge{border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700;background:var(--surface-2);color:var(--ink-3)}
+.badge.on{background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c);border-color:transparent}
+.pill.D{background:color-mix(in srgb,var(--bad) 16%,transparent);color:var(--bad)}
+.pr{color:var(--c);font-weight:900}
 .vid{display:grid;gap:8px}
 .vid .frame{position:relative;width:100%;max-width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:var(--surface-2)}
 .vid .frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
@@ -166,7 +176,7 @@ details .body ul{padding-left:18px;margin:6px 0}
 <div class="wrap">
   <header class="top">
     <div>
-      <div class="eyebrow">Home Strength · 40+ Women</div>
+      <div class="eyebrow">Sculpt · Cardio · Strong Back</div>
       <h1 id="title">訓練系統</h1>
       <div class="sub" id="subtitle"></div>
     </div>
@@ -222,6 +232,15 @@ details .body ul{padding-left:18px;margin:6px 0}
       <div id="finList"></div>
     </div>
 
+    <div class="card bonus" id="bonusCard">
+      <div class="row" style="justify-content:space-between">
+        <h2 style="margin:0">今日加碼 <small class="muted">3–5 分鐘，有力氣再做</small></h2>
+        <button class="small" id="btnDice">🎲 骰一個</button>
+      </div>
+      <div class="pick muted" id="bonusPick">還沒骰。</div>
+      <div class="row" id="bonusDone" hidden><button class="small" data-bonusdone aria-pressed="false">✓ 完成加碼</button></div>
+    </div>
+
     <div class="card">
       <h2>今天的狀態</h2>
       <div class="stack">
@@ -253,7 +272,20 @@ details .body ul{padding-left:18px;margin:6px 0}
         <div class="tile"><div class="v num" id="tStreak">0</div><div class="l">連續達標週</div></div>
         <div class="tile"><div class="v num" id="tTotal">0</div><div class="l">累計堂數</div></div>
       </div>
-      <p class="muted" style="font-size:13px;margin-top:8px">完整版 / 飯店版算 1 堂，10 分鐘微量版算 0.5 堂。一週達 3 堂即達標。</p>
+      <p class="muted" style="font-size:13px;margin-top:8px">完整版 / 飯店版算 1 堂，10 分鐘微量版算 0.5 堂。一週達 3 堂即達標。總噸數 = 每組重量 × 次數的加總。</p>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px">
+        <h2 style="margin:0">本月</h2><span class="muted num" id="monthLabel"></span>
+      </div>
+      <div class="tiles">
+        <div class="tile"><div class="v num" id="tMonth">0</div><div class="l">堂數</div></div>
+        <div class="tile"><div class="v num" id="tTon">0</div><div class="l">總噸數 kg</div></div>
+        <div class="tile"><div class="v num" id="tCardio">0</div><div class="l">心肺分鐘</div></div>
+      </div>
+      <div class="badges" id="badges" style="margin-top:10px"></div>
+      <div id="prList" style="margin-top:8px;font-size:13px"></div>
     </div>
 
     <div class="card">
@@ -298,27 +330,38 @@ details .body ul{padding-left:18px;margin:6px 0}
   <section id="tab-guide" class="stack" role="tabpanel" hidden>
     <div class="card">
       <h2>這套系統怎麼運作</h2>
-      <p>這不是「星期一練什麼」的課表，而是<strong>輪替制</strong>：三堂課 A → B → C 循環，哪天有空就做下一堂。時間不固定、出國、加班都沒關係，系統永遠知道下一堂該做什麼。</p>
+      <p>目標是<strong>全身體雕、心肺、和一個強壯的下背</strong>。不是「星期一練什麼」的課表，而是<strong>四堂輪替</strong>：A → B → C → D 循環，哪天有空就做下一堂。一週三堂的話，每一週練到的組合都不一樣，自然不會無聊。</p>
       <dl class="kv">
-        <dt>目標頻率</dt><dd>每週 3 堂（任何版本都算），忙碌週至少 2 堂微量版保住習慣</dd>
-        <dt>A 堂</dt><dd>髖主導 · 下背與後側鏈（硬舉、RDL、負重行走）</dd>
-        <dt>B 堂</dt><dd>推拉 · 上半身與抗旋轉核心（划船、伏地挺身、帕洛夫推）</dd>
-        <dt>C 堂</dt><dd>全身力量 · 心肺（盪壺、分腿蹲、肩推、間歇）</dd>
-        <dt>三種版本</dt><dd>完整版 45 分 / 飯店版 25 分（彈力繩＋徒手）/ 微量版 10 分（核心五式）</dd>
+        <dt>A 堂</dt><dd>臀腿塑形 · 後側鏈（硬舉、臀推、弓步、負重行走）</dd>
+        <dt>B 堂</dt><dd>上半身線條 · 核心（推、拉、肩與手臂雕塑、抗旋轉）</dd>
+        <dt>C 堂</dt><dd>代謝循環 · 燃脂（盪壺、推蹲、快速登階，格式每次輪換）</dd>
+        <dt>D 堂</dt><dd>全身力量 · 跑步機間歇（深蹲、肩推、划船＋四種間歇輪換）</dd>
+        <dt>三種版本</dt><dd>完整版 45 分 / 飯店版 25 分（彈力繩＋徒手）/ 微量版 10 分（核心五式與燃脂十分交替）</dd>
       </dl>
     </div>
 
     <div class="card">
+      <h2>不無聊的設計</h2>
+      <ul style="margin:0;padding-left:18px">
+        <li><strong>動作輪換</strong>：每個動作槽有 2–3 個替換動作，同一堂每做 2 次就自動換一個；不喜歡也可以按「換動作」。</li>
+        <li><strong>循環格式輪換</strong>：C 堂每次用不同格式（循環 / EMOM / AMRAP / 階梯），D 堂的跑步機間歇也有四種。</li>
+        <li><strong>今日加碼</strong>：有力氣的話骰一個 3–5 分鐘的小挑戰。</li>
+        <li><strong>新紀錄</strong>：任何動作的重量超過以往，儲存時會自動標記 🏆。</li>
+        <li><strong>徽章與月統計</strong>：連續達標週、總噸數、心肺分鐘，在「紀錄」頁看得到。</li>
+      </ul>
+    </div>
+
+    <div class="card">
       <h2>週期化：12 堂一個階段</h2>
-      <p>像運動員一樣分階段推進，但用「完成堂數」而不是日曆來計算，所以中斷再回來也不會亂掉。每階段的最後 3 堂是<strong>減量堂</strong>：組數減一、強度放輕，讓身體吸收進步。</p>
+      <p>用「完成堂數」而不是日曆來推進，中斷再回來也不會亂掉。每階段的最後 3 堂是<strong>減量堂</strong>：組數減一、強度放輕，讓身體吸收進步。</p>
       <div class="tablewrap"><table>
         <thead><tr><th>階段</th><th>重點</th><th>主動作</th><th>RPE</th></tr></thead>
         <tbody>
-          <tr><td>1 基礎期</td><td>學會髖屈伸、建立下背耐力</td><td>3 × 12</td><td>6–7</td></tr>
-          <tr><td>2 強化期</td><td>增加負重、肌肉量</td><td>3 × 10</td><td>7–8</td></tr>
+          <tr><td>1 基礎期</td><td>學動作、建立耐力與下背穩定</td><td>3 × 12</td><td>6–7</td></tr>
+          <tr><td>2 雕塑期</td><td>增加負重、肌肉線條</td><td>3 × 10</td><td>7–8</td></tr>
           <tr><td>3 力量期</td><td>較重、較少次數，骨密度刺激</td><td>4 × 6–8</td><td>8</td></tr>
         </tbody></table></div>
-      <p class="muted" style="font-size:13px;margin-top:8px">第 3 階段後回到第 2 階段重新循環（重量會比上一輪高）。RPE = 自覺費力程度：7 代表「還能再做 3 下」，8 代表「還能 2 下」。</p>
+      <p class="muted" style="font-size:13px;margin-top:8px">第 3 階段後回到第 2 階段重新循環。RPE = 自覺費力程度：7 代表「還能再做 3 下」，8 代表「還能 2 下」。</p>
     </div>
 
     <div class="card">
@@ -334,11 +377,11 @@ details .body ul{padding-left:18px;margin:6px 0}
     <div class="card">
       <h2>給 40+ 女性的重點</h2>
       <ul style="margin:0;padding-left:18px">
+        <li><strong>體雕靠肌肉</strong>：40 歲後每十年約流失 3–8% 肌肉，線條來自阻力訓練而不是只做有氧；心肺負責代謝與體脂。</li>
         <li><strong>骨密度</strong>：更年期前後每年可能流失 1–2% 骨量，負重的硬舉、深蹲、負重行走是最有效的刺激。</li>
-        <li><strong>肌肉量</strong>：40 歲後每十年約流失 3–8% 肌肉，每週 2–3 次阻力訓練可以逆轉。</li>
         <li><strong>蛋白質</strong>：每公斤體重 1.2–1.6 g，以 62 kg 來說約 75–100 g／天，分 3–4 餐吃。</li>
         <li><strong>呼吸與骨盆底</strong>：出力時吐氣，不要憋氣硬撐；提重物前先收緊核心。</li>
-        <li><strong>關節友善</strong>：熱身不省略、動作速度放慢（下放 3 秒）、痛就停（酸脹可以，刺痛不行）。</li>
+        <li><strong>關節友善</strong>：熱身不省略、下放放慢（3 秒）、痛就停（酸脹可以，刺痛不行）。</li>
         <li><strong>恢復</strong>：兩堂之間至少隔一天；睡眠 7 小時以上比多練一堂更重要。</li>
       </ul>
     </div>
@@ -346,9 +389,9 @@ details .body ul{padding-left:18px;margin:6px 0}
     <div class="card">
       <h2>出國／忙碌週規則</h2>
       <ul style="margin:0;padding-left:18px">
-        <li>帶一條彈力繩就能做所有飯店版動作。</li>
+        <li>帶一條彈力繩就能做所有飯店版動作；飯店有跑步機就做 D 堂的間歇。</li>
         <li>開啟「出國模式」後預設顯示飯店版，週目標降為 2 堂。</li>
-        <li>最低底線：每天早上 10 分鐘微量版（核心五式），保護下背、維持習慣。</li>
+        <li>最低底線：每天早上 10 分鐘微量版，保護下背、維持習慣。</li>
         <li>回國後直接接續下一堂，不用「補課」；中斷超過 3 週，建議從當前階段第 1 堂重來。</li>
       </ul>
     </div>
@@ -418,65 +461,112 @@ const EX = {
   catcow:{n:"貓牛式",eq:"徒手",u:"reps",cue:"四足跪姿。吸氣時腰往下塌、看前方；吐氣時背拱起、看肚臍。每個方向 3–4 秒，當作脊椎的開機動作。"},
   deadbug:{n:"死蟲式",eq:"徒手",u:"reps",cue:"仰躺，手舉直、膝蓋彎 90 度。吐氣時對側手腳慢慢伸出，腰要全程貼住地面；吸氣收回。腰一離地就是做太快。"},
   glutebridge:{n:"臀橋",eq:"徒手",u:"reps",cue:"仰躺屈膝，腳跟踩地把髖推到身體一直線，頂點夾臀 2 秒。用屁股出力，不要靠腰往上頂。"},
-  birddog:{n:"鳥狗式",eq:"徒手",u:"reps",cue:"四足跪姿，對側手腳同時伸直、停 3 秒，骨盆不能轉。想像腰上放一杯水，水不能倒。這是下背穩定度最重要的動作。"},
+  birddog:{n:"鳥狗式",eq:"徒手",u:"reps",cue:"四足跪姿，對側手腳同時伸直、停 3 秒，骨盆不能轉。想像腰上放一杯水，水不能倒。下背穩定度最重要的動作。"},
   kb_dl:{n:"壺鈴硬舉",eq:"壺鈴",u:"kg",cue:"腳與肩同寬，壺鈴放在雙腳中間。先把屁股往後推、膝微彎、背打直像一塊板子，用臀部與大腿後側把壺鈴拉起來站直，吐氣。下放時先推屁股，不是先彎腰。"},
+  kb_sumo:{n:"壺鈴相撲硬舉",eq:"壺鈴",u:"kg",cue:"腳開比肩寬、腳尖外轉 30 度，壺鈴在雙腳中間。膝蓋朝腳尖方向、上身比一般硬舉更直，用臀部內側把壺鈴拉起。"},
   db_rdl:{n:"啞鈴羅馬尼亞硬舉",eq:"啞鈴",u:"kg",cue:"雙手持啞鈴站直。膝蓋微彎固定，髖往後推，啞鈴沿著大腿滑到小腿中段、感覺大腿後側拉緊即停；全程背部中立。用臀部把身體拉回來。每下 3 秒下放。"},
   stepup:{n:"登階",eq:"登階板 + 啞鈴",u:"kg",cue:"整個腳掌踩穩階板，用前腳把身體推上去，後腳不要蹬地。下來時慢（3 秒）。先徒手，穩了再拿啞鈴。"},
-  superman:{n:"俯臥背伸展（超人式）",eq:"徒手",u:"reps",cue:"趴著、手往前伸。手和腳同時抬離地面 2–3 公分、停 2 秒，眼睛看地板，不要仰頭。目標是下背肌群的耐力，不是抬得高。"},
-  suitcase:{n:"單手提箱行走",eq:"壺鈴",u:"kg",cue:"一手提壺鈴走路，身體完全不能歪，像頭頂放一杯水。走 30 秒（約 20–30 步）換手。這是訓練「側核心保護下背」最實用的動作。"},
+  superman:{n:"俯臥背伸展（超人式）",eq:"徒手",u:"reps",cue:"趴著、手往前伸。手和腳同時抬離地面 2–3 公分、停 2 秒，眼睛看地板，不要仰頭。練的是下背耐力，不是抬得高。"},
+  suitcase:{n:"單手提箱行走",eq:"壺鈴",u:"kg",cue:"一手提壺鈴走路，身體完全不能歪，像頭頂放一杯水。走 30 秒（約 20–30 步）換手。訓練「側核心保護下背」最實用的動作。"},
   band_gm:{n:"彈力繩早安式",eq:"彈力繩",u:"reps",cue:"繩踩在腳下、繞到肩後。髖往後推、上身前傾到約 45 度（背部打直），再用臀部站直。輕負荷、高次數，當作硬舉的補強。"},
   goblet:{n:"高腳杯深蹲",eq:"壺鈴 / 啞鈴",u:"kg",cue:"壺鈴抱在胸前，腳尖微外。往下坐到大腿至少與地面平行，膝蓋朝腳尖方向、全程挺胸。站起時吐氣。"},
   db_row:{n:"單手啞鈴划船",eq:"啞鈴",u:"kg",cue:"一手撐在登階板或椅子上，背打直與地面近平行。另一手把啞鈴拉到腰側，手肘往後不往外，頂點背肌夾緊 1 秒。"},
   pushup:{n:"伏地挺身",eq:"徒手 / 登階板",u:"reps",cue:"手撐在登階板上可降低難度，撐地面難度較高。身體從頭到腳跟一直線，核心收緊；胸口碰到板子再推起。做不到就把手墊更高，不要跪著做。"},
   pallof:{n:"帕洛夫推",eq:"彈力繩",u:"reps",cue:"繩固定在門把或柱子，側身站。雙手把繩往前推到伸直、停 2 秒再收回，身體不被繩拉轉。抗旋轉核心是保護下背的關鍵。"},
-  pullapart:{n:"彈力繩肩後拉",eq:"彈力繩",u:"reps",cue:"雙手與肩同高持繩，把繩拉開到碰到胸前，肩胛往後夾。改善圓肩、讓硬舉時背更容易打直。"},
+  pullapart:{n:"彈力繩肩後拉",eq:"彈力繩",u:"reps",cue:"雙手與肩同高持繩，把繩拉開到碰到胸前，肩胛往後夾。改善圓肩，讓背部線條更好看。"},
   sideplank:{n:"側棒式",eq:"徒手",u:"sec",cue:"手肘在肩膀正下方，髖抬高讓身體一直線。屁股不要掉。覺得太難可屈膝做。"},
   farmer:{n:"農夫走路",eq:"啞鈴",u:"kg",cue:"雙手各持啞鈴，肩膀往後下沉、挺胸，有節奏地走。核心像準備被輕輕打一拳一樣收緊。拿你能穩穩走 40 秒的重量。"},
   kb_swing:{n:"壺鈴盪壺",eq:"壺鈴",u:"kg",cue:"髖像彈簧：屁股往後、壺鈴甩到胯下，再爆發式挺髖讓壺鈴飄到胸口高度。手臂不出力、不聳肩，頂點吐氣。基礎期先用壺鈴硬舉代替，髖屈伸熟練後再加入。"},
-  split:{n:"分腿蹲 / 後腳墊高分腿蹲",eq:"啞鈴 + 登階板",u:"kg",cue:"後腳腳背踩在登階板上，前腿下蹲到大腿近水平，重心放在前腳跟。先徒手，再雙手持啞鈴。"},
+  split:{n:"後腳墊高分腿蹲",eq:"啞鈴 + 登階板",u:"kg",cue:"後腳腳背踩在登階板上，前腿下蹲到大腿近水平，重心放在前腳跟。先徒手，再雙手持啞鈴。"},
+  rev_lunge:{n:"後退弓步",eq:"啞鈴",u:"kg",cue:"一腳往後跨、後膝輕點地面，前腿大腿近水平；用前腳跟站回來。對膝蓋最友善的弓步。"},
+  lat_lunge:{n:"側弓步",eq:"啞鈴",u:"kg",cue:"往側邊跨一大步、屁股往後坐在跨出去的那條腿上，另一腿打直；推回站直。練大腿內外側線條。"},
+  curtsy:{n:"屈膝禮弓步",eq:"啞鈴",u:"kg",cue:"一腳往斜後方交叉跨到另一腳外側，像行屈膝禮，前腿下蹲；前腳推回。主攻臀部側面。"},
   db_ohp:{n:"啞鈴過頭推",eq:"啞鈴",u:"kg",cue:"站姿、肋骨往下收、核心收緊、屁股微夾。把啞鈴推到耳朵旁上方，不要塌腰往後仰。"},
   hipthrust:{n:"臀推（上背靠登階板）",eq:"登階板 + 啞鈴",u:"kg",cue:"上背靠登階板，雙腳踩地。髖往上推到身體一直線、頂點夾臀 2 秒、下巴微收。可以把啞鈴放在髖上加重。"},
+  band_walk:{n:"彈力繩側走（怪獸走路）",eq:"彈力繩",u:"reps",cue:"繩套在膝蓋上方或腳踝，半蹲、腳尖朝前，往側邊一步步走，膝蓋全程往外撐。臀部側面會發燙，正常。"},
+  band_kick:{n:"彈力繩後踢",eq:"彈力繩",u:"reps",cue:"繩套腳踝，扶牆站直，一腳往後踢、頂點夾臀 1 秒，上身不前傾。"},
+  calf:{n:"登階板提踵",eq:"登階板 + 啞鈴",u:"reps",cue:"前腳掌踩在階板邊緣、腳跟懸空，慢慢往下放到底再踮到最高、頂點停 1 秒。小腿線條。"},
+  db_press:{n:"啞鈴地板臥推",eq:"啞鈴",u:"kg",cue:"仰躺、膝蓋彎，手肘約 45 度把啞鈴往上推到胸口正上方；下放到上臂碰地。胸與手臂後側。"},
+  db_fly:{n:"啞鈴俯身反向飛鳥",eq:"啞鈴",u:"kg",cue:"髖往後推、上身前傾 45 度、背打直。手肘微彎把啞鈴往外側打開到與肩同高，肩胛夾緊。後肩與上背線條。"},
+  lat_raise:{n:"啞鈴側平舉",eq:"啞鈴",u:"kg",cue:"手肘微彎、把啞鈴往側邊抬到與肩同高，像倒水一樣小指略高，慢放 3 秒。肩膀線條用輕重量、高次數。"},
+  curl:{n:"啞鈴彎舉",eq:"啞鈴",u:"kg",cue:"手肘貼身體不前移，把啞鈴捲到肩前、慢放 3 秒。不要靠身體晃。"},
+  tri_ext:{n:"啞鈴過頭臂屈伸",eq:"啞鈴",u:"kg",cue:"雙手捧一顆啞鈴舉過頭，手肘朝前固定、啞鈴往後腦下放再推直。手臂後側（蝴蝶袖）。"},
+  tri_kick:{n:"啞鈴後踢（三頭）",eq:"啞鈴",u:"kg",cue:"俯身、上臂貼身與地面平行，只動前臂把啞鈴往後推直、頂點停 1 秒。"},
+  renegade:{n:"伏地划船",eq:"啞鈴",u:"kg",cue:"雙手撐在啞鈴上成伏地挺身姿勢（腳開寬一點），一手把啞鈴拉到腰側，骨盆不轉。上背＋核心一次練。"},
+  halo:{n:"壺鈴繞頭",eq:"壺鈴",u:"reps",cue:"倒握壺鈴在胸前，繞著頭畫圈、貼著頭走，核心收緊、肋骨不開。肩膀活動度與核心。"},
+  hollow:{n:"空心撐體",eq:"徒手",u:"sec",cue:"仰躺、腰貼地，手腳抬起成淺碗狀。撐住不動；腰一離地就把腳抬高一點。"},
+  thruster:{n:"啞鈴推蹲",eq:"啞鈴",u:"kg",cue:"啞鈴扛在肩上深蹲，站起的勢頭順勢推過頭。全身一起動，心跳馬上上來。"},
+  fast_step:{n:"登階板快踏",eq:"登階板",u:"reps",cue:"一腳上、一腳上、一腳下、一腳下，用快節奏踏，每 10 下換領先腳。膝蓋微彎落地輕。"},
+  mtn:{n:"登山者",eq:"徒手",u:"reps",cue:"伏地挺身姿勢，膝蓋輪流往胸口帶，屁股不要翹高。可以手撐登階板降低難度。"},
+  sq_press:{n:"深蹲轉肩推（壺鈴）",eq:"壺鈴",u:"kg",cue:"高腳杯深蹲站起後把壺鈴推過頭，再收回胸前下蹲。"},
+  jj:{n:"開合跳",eq:"徒手",u:"reps",cue:"膝蓋微彎、落地輕。覺得衝擊太大就改成踏步開合（一次一腳）。"},
+  skater:{n:"溜冰跳",eq:"徒手",u:"reps",cue:"側向單腳跳到另一腳、後腳往後交叉點地，像速滑。可以不跳改成大步側跨。"},
+  plank:{n:"棒式",eq:"徒手",u:"sec",cue:"手肘在肩下、屁股夾緊、肋骨收，身體一直線。抖是正常的。"},
   tm_incline:{n:"跑步機斜坡快走",eq:"跑步機",u:"min",cue:"坡度 6–8%，速度 5–6 km/h，「可以講話但唱不了歌」的強度。不要扶手。"},
-  tm_interval:{n:"跑步機間歇",eq:"跑步機",u:"min",cue:"1 分鐘快（快走或慢跑、坡度 3%）＋ 2 分鐘慢走，重複 5 回，共 15 分鐘。"},
-  sl_rdl:{n:"單腳羅馬尼亞硬舉",eq:"徒手 / 啞鈴",u:"reps",cue:"單腳站、另一腳往後伸，上身前傾到接近與地面平行，背部打直、骨盆不轉。可以手扶牆。飯店版的硬舉替代。"},
+  tm_interval:{n:"跑步機 1:2 間歇",eq:"跑步機",u:"min",cue:"1 分鐘快（快走或慢跑、坡度 3%）＋ 2 分鐘慢走，重複 5 回，共 15 分鐘。"},
+  tm_pyramid:{n:"跑步機金字塔",eq:"跑步機",u:"min",cue:"快 30 秒 / 慢 60 秒 → 快 60 / 慢 60 → 快 90 / 慢 60 → 快 60 / 慢 60 → 快 30 / 慢 60，約 12 分鐘。速度自己選，快的時候要喘。"},
+  tm_3030:{n:"跑步機 30/30",eq:"跑步機",u:"min",cue:"30 秒快（慢跑或坡度 8% 快走）／ 30 秒慢，重複 12 回共 12 分鐘。"},
+  tm_hill:{n:"跑步機爬坡階梯",eq:"跑步機",u:"min",cue:"速度固定 5.5 km/h，坡度每 2 分鐘 +2%：2 → 4 → 6 → 8 → 10%，再每 2 分鐘降回來，共 18 分鐘。"},
+  sl_rdl:{n:"單腳羅馬尼亞硬舉",eq:"徒手 / 啞鈴",u:"reps",cue:"單腳站、另一腳往後伸，上身前傾到接近與地面平行，背部打直、骨盆不轉。可以手扶牆。"},
   band_row:{n:"彈力繩划船",eq:"彈力繩",u:"reps",cue:"繩套在門把上或腳底，手肘往後拉到腰側、肩胛夾緊 1 秒。"},
   band_ohp:{n:"彈力繩肩推",eq:"彈力繩",u:"reps",cue:"繩踩腳下，雙手握繩從肩膀推到頭頂上方；核心收緊不塌腰。"},
+  band_curl:{n:"彈力繩彎舉",eq:"彈力繩",u:"reps",cue:"繩踩腳下，手肘貼身把繩捲到肩前、慢放。"},
+  band_tri:{n:"彈力繩下壓（三頭）",eq:"彈力繩",u:"reps",cue:"繩固定在高處（門上方）或一手壓在肩上，另一手把繩往下壓直。"},
+  band_lat:{n:"彈力繩側平舉",eq:"彈力繩",u:"reps",cue:"繩踩腳下、雙手往側邊抬到與肩同高，慢放。"},
+  band_fly:{n:"彈力繩反向飛鳥",eq:"彈力繩",u:"reps",cue:"雙手持繩在身前伸直，往兩側打開到身體兩側，肩胛夾緊。"},
   bw_squat:{n:"徒手深蹲",eq:"徒手",u:"reps",cue:"雙手前伸平衡，坐到大腿與地面平行，膝蓋朝腳尖；下放 3 秒。"},
+  sq_pulse:{n:"深蹲脈衝",eq:"徒手",u:"reps",cue:"蹲到最低點，在底部小幅上下彈動，大腿會燒。"},
   sl_bridge:{n:"單腳臀橋",eq:"徒手",u:"reps",cue:"臀橋姿勢，一腳伸直離地，用另一腳把髖推到一直線、頂點停 2 秒。"},
   stairs:{n:"爬樓梯間歇",eq:"樓梯",u:"min",cue:"快走上樓 1 分鐘、慢走下樓 1 分鐘，重複 5 回。飯店沒健身房時的心肺替代。"},
+  burpee_e:{n:"簡易波比",eq:"徒手",u:"reps",cue:"蹲下、雙手撐地（可撐登階板）、雙腳往後踩（一次一腳也可以）、再踩回站起、踮腳伸手。不用跳。"},
 };
 const WARM = {
-  A:[["catcow","1 × 8"],["deadbug","1 × 8／側"],["glutebridge","1 × 12"],["birddog","1 × 6／側"]],
-  B:[["catcow","1 × 8"],["pullapart","1 × 15"],["bw_squat","1 × 10"],["pushup","1 × 5（登階板上）"]],
-  C:[["catcow","1 × 8"],["glutebridge","1 × 12"],["deadbug","1 × 8／側"],["bw_squat","1 × 10"]],
+  A:[["catcow","1 × 8"],["glutebridge","1 × 12"],["band_walk","1 × 10／側"],["birddog","1 × 6／側"]],
+  B:[["catcow","1 × 8"],["pullapart","1 × 15"],["halo","1 × 5／方向"],["pushup","1 × 5（登階板上）"]],
+  C:[["jj","1 × 20"],["bw_squat","1 × 10"],["glutebridge","1 × 12"],["deadbug","1 × 6／側"]],
+  D:[["catcow","1 × 8"],["bw_squat","1 × 10"],["band_walk","1 × 10／側"],["deadbug","1 × 8／側"]],
   M:[["catcow","1 × 8"]],
 };
-// role: main / sec follow the phase scheme; fixed exercises keep their own sets/reps. ps = per side.
+// Each slot: pool = 2–3 interchangeable exercises (auto-rotates every 2 sessions of that type).
+// role main / sec follow the phase scheme; fixed slots keep their own sets/reps. ps = per side.
 const SESS = {
-  A:{name:"A · 髖主導",desc:"下背與後側鏈：硬舉、負重行走",
-    full:[{id:"kb_dl",role:"main"},{id:"db_rdl",role:"sec"},{id:"stepup",role:"sec",ps:1},{id:"superman",sets:3,reps:"12（停 2 秒）"},{id:"suitcase",sets:3,reps:"30 秒／側",u:"kg"},{id:"band_gm",sets:2,reps:"15"}],
-    fullFin:[{id:"tm_incline",sets:1,reps:"10 分鐘"}],
-    short:[{id:"sl_rdl",sets:3,reps:"10／側"},{id:"band_gm",sets:3,reps:"15"},{id:"stepup",sets:3,reps:"10／側（用椅子或樓梯）",u:"reps"},{id:"superman",sets:3,reps:"12（停 2 秒）"},{id:"birddog",sets:3,reps:"8／側"}],
-    shortFin:[{id:"stairs",sets:1,reps:"5–10 分鐘（可省略）"}]},
-  B:{name:"B · 推拉核心",desc:"上半身與抗旋轉：划船、伏地挺身、帕洛夫推",
-    full:[{id:"goblet",role:"main"},{id:"db_row",role:"sec",ps:1},{id:"pushup",sets:3,reps:"8–12"},{id:"pallof",sets:3,reps:"10／側"},{id:"pullapart",sets:3,reps:"15"},{id:"sideplank",sets:3,reps:"20–30 秒／側"}],
-    fullFin:[{id:"farmer",sets:3,reps:"40 秒",u:"kg"}],
-    short:[{id:"pushup",sets:3,reps:"10"},{id:"band_row",sets:3,reps:"15"},{id:"pallof",sets:3,reps:"10／側"},{id:"pullapart",sets:3,reps:"15"},{id:"sideplank",sets:3,reps:"25 秒／側"}],
+  A:{name:"A · 臀腿塑形",desc:"後側鏈與臀腿線條：硬舉、臀推、弓步、負重行走",
+    full:[{pool:["kb_dl","db_rdl","kb_sumo"],role:"main"},{pool:["hipthrust","stepup"],role:"sec",ps:0},{pool:["rev_lunge","split","curtsy","lat_lunge"],role:"sec",ps:1},{pool:["band_walk","band_kick"],sets:3,reps:"12／側"},{pool:["suitcase","superman"],sets:3,reps:"30 秒／側",u:"kg"},{pool:["calf","band_gm"],sets:2,reps:"15"}],
+    fullFin:[{pool:["tm_incline","stairs"],sets:1,reps:"10 分鐘"}],
+    short:[{pool:["sl_rdl","band_gm"],sets:3,reps:"12／側"},{pool:["sl_bridge","glutebridge"],sets:3,reps:"12／側"},{pool:["rev_lunge","curtsy","lat_lunge"],sets:3,reps:"10／側",u:"reps"},{pool:["band_walk","band_kick"],sets:3,reps:"12／側"},{pool:["superman","birddog"],sets:3,reps:"12"}],
+    shortFin:[{pool:["stairs"],sets:1,reps:"5–10 分鐘（可省略）"}]},
+  B:{name:"B · 上半身線條",desc:"推、拉、肩與手臂雕塑，加上抗旋轉核心",
+    full:[{pool:["db_press","pushup","db_ohp"],role:"main"},{pool:["db_row","db_fly","renegade"],role:"sec",ps:1},{pool:["lat_raise","curl","tri_ext","tri_kick"],sets:3,reps:"12–15",u:"kg"},{pool:["pallof","halo"],sets:3,reps:"10／側"},{pool:["pullapart","band_fly"],sets:3,reps:"15"},{pool:["sideplank","hollow","plank"],sets:3,reps:"30 秒"}],
+    fullFin:[{pool:["farmer","suitcase"],sets:3,reps:"40 秒",u:"kg"}],
+    short:[{pool:["pushup","band_ohp"],sets:3,reps:"12"},{pool:["band_row","band_fly"],sets:3,reps:"15"},{pool:["band_lat","band_curl","band_tri"],sets:3,reps:"15"},{pool:["pallof","halo"],sets:3,reps:"10／側"},{pool:["sideplank","hollow","plank"],sets:3,reps:"30 秒"}],
     shortFin:[]},
-  C:{name:"C · 全身心肺",desc:"盪壺、分腿蹲、肩推與間歇",
-    full:[{id:"kb_swing",role:"main",alt0:"kb_dl"},{id:"split",role:"sec",ps:1},{id:"db_ohp",role:"sec"},{id:"hipthrust",sets:3,reps:"12（停 2 秒）"},{id:"birddog",sets:3,reps:"8／側（慢）"},{id:"deadbug",sets:3,reps:"10／側"}],
-    fullFin:[{id:"tm_interval",sets:1,reps:"15 分鐘"}],
-    short:[{id:"bw_squat",sets:3,reps:"15"},{id:"split",sets:3,reps:"10／側",u:"reps"},{id:"band_ohp",sets:3,reps:"15"},{id:"sl_bridge",sets:3,reps:"10／側"},{id:"deadbug",sets:3,reps:"10／側"}],
-    shortFin:[{id:"stairs",sets:1,reps:"10 分鐘（可省略）"}]},
-  M:{name:"微量 · 核心五式",desc:"10 分鐘保護下背、維持習慣",
-    micro:[{id:"birddog",sets:2,reps:"8／側"},{id:"deadbug",sets:2,reps:"8／側"},{id:"sideplank",sets:2,reps:"20 秒／側"},{id:"glutebridge",sets:2,reps:"12"},{id:"superman",sets:2,reps:"10（停 2 秒）"}]},
+  C:{name:"C · 代謝循環",desc:"全身燃脂循環，格式每次輪換",
+    formats:[
+      {name:"循環 3 輪",desc:"每個動作做 40 秒、休 20 秒，6 個動作一輪，輪與輪之間休 60 秒。",rounds:3,reps:"40 秒",min:15},
+      {name:"EMOM 12 分",desc:"每分鐘開始做指定次數，剩下的時間休息；6 個動作輪 2 次。做完才休，越快做完休越久。",rounds:2,reps:"12 下",min:12},
+      {name:"AMRAP 12 分",desc:"12 分鐘內盡量多輪：每個動作 10 下，照順序做完算一輪。記下總輪數，下次挑戰超越。",rounds:1,reps:"10 下 × 盡量多輪",min:12},
+      {name:"階梯 10-8-6-4-2",desc:"每個動作 10 下、全部做完換 8 下⋯一路到 2 下。全程計時，下次試著更快。",rounds:5,reps:"10→2",min:14},
+    ],
+    moves:[{pool:["kb_swing","goblet"],alt0:"kb_dl",u:"kg"},{pool:["thruster","sq_press"],u:"kg"},{pool:["fast_step","skater","jj"]},{pool:["pushup","mtn","burpee_e"]},{pool:["rev_lunge","sq_pulse"],u:"reps"},{pool:["renegade","band_row"],u:"kg"}],
+    movesShort:[{pool:["bw_squat","sq_pulse"]},{pool:["burpee_e","mtn"]},{pool:["rev_lunge","skater"]},{pool:["pushup","band_ohp"]},{pool:["jj","fast_step"]},{pool:["band_row","band_fly"]}]},
+  D:{name:"D · 全身力量 + 間歇",desc:"深蹲、肩推、划船，再加跑步機間歇",
+    full:[{pool:["goblet","split","kb_swing"],role:"main",alt0:"goblet"},{pool:["db_ohp","db_press"],role:"sec"},{pool:["db_row","renegade"],role:"sec",ps:1},{pool:["hipthrust","sl_bridge"],sets:3,reps:"12"},{pool:["deadbug","birddog","hollow"],sets:3,reps:"10／側"}],
+    fullFin:[{pool:["tm_interval","tm_pyramid","tm_3030","tm_hill"],sets:1,reps:"12–18 分鐘"}],
+    short:[{pool:["bw_squat","split"],sets:3,reps:"15"},{pool:["band_ohp","pushup"],sets:3,reps:"12"},{pool:["band_row","band_fly"],sets:3,reps:"15"},{pool:["sl_bridge","glutebridge"],sets:3,reps:"12／側"},{pool:["deadbug","birddog"],sets:3,reps:"10／側"}],
+    shortFin:[{pool:["stairs","tm_3030"],sets:1,reps:"10 分鐘（可省略）"}]},
+  M:{name:"微量",desc:"10 分鐘，核心五式與燃脂十分交替",
+    variants:[
+      {name:"核心五式",desc:"保護下背、維持習慣",items:[{pool:["birddog"],sets:2,reps:"8／側"},{pool:["deadbug"],sets:2,reps:"8／側"},{pool:["sideplank"],sets:2,reps:"20 秒／側"},{pool:["glutebridge"],sets:2,reps:"12"},{pool:["superman"],sets:2,reps:"10（停 2 秒）"}]},
+      {name:"燃脂十分",desc:"5 個動作各 40 秒、休 20 秒，做 2 輪",items:[{pool:["jj"],sets:2,reps:"40 秒"},{pool:["bw_squat"],sets:2,reps:"40 秒"},{pool:["mtn"],sets:2,reps:"40 秒"},{pool:["rev_lunge"],sets:2,reps:"40 秒",u:"reps"},{pool:["plank"],sets:2,reps:"40 秒"}]},
+    ]},
 };
+const BONUS = ["壺鈴盪壺 50 下（分幾組都可以）","棒式累計 3 分鐘","登階板快踏 100 下","跑步機 5 分鐘，坡度 10%","彈力繩肩後拉 100 下","徒手深蹲 50 下＋深蹲脈衝 20 下","農夫走路 3 趟 × 45 秒","開合跳 30 秒 × 4，中間休 30 秒","單腳臀橋 20 下／側","爬樓梯 5 層（或登階 3 分鐘）","壺鈴繞頭 10／方向 × 2","空心撐體 30 秒 × 3"];
 const PHASES = [
-  {name:"基礎期",main:[3,"12"],sec:[3,"12"],rpe:"6–7",focus:"學會髖屈伸，建立下背耐力，重量輕、速度慢"},
-  {name:"強化期",main:[3,"10"],sec:[3,"10"],rpe:"7–8",focus:"每次都試著比上次多 1 kg 或 1 下"},
+  {name:"基礎期",main:[3,"12"],sec:[3,"12"],rpe:"6–7",focus:"學動作、建立耐力與下背穩定，重量輕、速度慢"},
+  {name:"雕塑期",main:[3,"10"],sec:[3,"10"],rpe:"7–8",focus:"每次都試著比上次多 1 kg 或 1 下"},
   {name:"力量期",main:[4,"6–8"],sec:[3,"8"],rpe:"8",focus:"重量較重、次數少，骨密度刺激最強"},
 ];
-const ROT = ["A","B","C"];
+const ROT = ["A","B","C","D"];
 const SESSIONS_PER_PHASE = 12, DELOAD_FROM = 9;
 
 /* ========= STORAGE ========= */
@@ -513,8 +603,10 @@ function progression(){
   const phaseIdx=block===0?0:((block-1)%2)+1;
   const deload=inBlock>=DELOAD_FROM;
   const last=counted[counted.length-1];
-  const nextType=last?ROT[(ROT.indexOf(last.type)+1)%3]:"A";
+  const nextType=last?ROT[(ROT.indexOf(last.type)+1)%ROT.length]:"A";
   return {n,block,inBlock,phaseIdx,phase:PHASES[phaseIdx],deload,nextType,round:Math.floor(block/2)+1};
+}
+function typeCount(t){return DB.sessions.filter(s=>s.type===t).length;
 }
 function lastLog(exId){
   const ss=[...DB.sessions].sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
@@ -536,7 +628,8 @@ function suggest(exId,targetReps){
 }
 
 /* ========= TODAY TAB ========= */
-let cur={type:"A",version:"full",back:null,feel:null};
+let cur={type:"A",version:"full",back:null,feel:null,swaps:{},bonus:null,bonusDone:false};
+function resolveId(it,slot,p){const pool=it.pool||[it.id];const c=typeCount(cur.version==="micro"?"M":cur.type);let idx=(Math.floor(c/2)+slot+(cur.swaps[slot]||0))%pool.length;let id=pool[idx];if(p.phaseIdx===0&&id==="kb_swing")id=it.alt0||"kb_dl";return id;}
 function scheme(item,p){
   if(item.role){const sc=p.phase[item.role];let sets=sc[0];if(p.deload)sets=Math.max(2,sets-1);return {sets,reps:sc[1]+(item.ps?"／側":""),rpe:p.deload?"6":p.phase.rpe};}
   return {sets:item.sets,reps:item.reps,rpe:null};
@@ -544,7 +637,7 @@ function scheme(item,p){
 function renderToday(){
   const p=progression();
   const s=DB.settings;
-  $("#title").textContent=(s.name?s.name+" 的":"")+"下背強化訓練系統";
+  $("#title").textContent=(s.name?s.name+" 的":"")+"體雕訓練系統";
   const age=new Date().getFullYear()-(+s.birthYear||1981);
   $("#subtitle").textContent=`${age} 歲 · ${s.heightCm||171} cm · 第 ${p.round} 輪`;
   $("#travelPill").hidden=!s.travel;
@@ -553,29 +646,34 @@ function renderToday(){
   $("#phaseFill").style.width=(p.inBlock/SESSIONS_PER_PHASE*100)+"%";
   if(!$("#sessDate").value) $("#sessDate").value=today();
   // version segs
-  const vs=[["full","完整版","45 分 · 全部器材"],["short","飯店版","25 分 · 彈力繩＋徒手"],["micro","微量版","10 分 · 核心五式"]];
+  const vs=[["full","完整版","45 分 · 全部器材"],["short","飯店版","25 分 · 彈力繩＋徒手"],["micro","微量版","10 分 · 核心 / 燃脂"]];
   $("#versionSegs").innerHTML=vs.map(v=>`<button data-v="${v[0]}" aria-pressed="${cur.version===v[0]}">${v[1]}<small>${v[2]}</small></button>`).join("");
   const type=cur.version==="micro"?"M":cur.type;
   const S=SESS[type];
-  $("#nextTitle").innerHTML=`<span class="pill ${type}">${type==="M"?"微量":type}</span> ${esc(S.name.replace(/^[ABC] · /,""))}`;
-  $("#nextDesc").textContent=type==="M"?S.desc:`${S.desc} · ${p.phase.focus}`;
+  const mv=type==="M"?S.variants[typeCount("M")%S.variants.length]:null;
+  const fmt=type==="C"?S.formats[typeCount("C")%S.formats.length]:null;
+  $("#nextTitle").innerHTML=`<span class="pill ${type}">${type==="M"?"微量":type}</span> ${esc(type==="M"?mv.name:S.name.replace(/^[ABCD] · /,""))}`;
+  $("#nextDesc").textContent=type==="M"?mv.desc:`${S.desc} · ${p.phase.focus}`;
   $("#btnPrevType").hidden=cur.version==="micro";
-  // warm
   $("#warmList").innerHTML=WARM[type].map(([id,rx])=>`<li><span>${esc(EX[id].n)}</span><span class="num muted">${esc(rx)}</span></li>`).join("");
-  // main list
-  const items=cur.version==="micro"?S.micro:(cur.version==="full"?S.full:S.short);
-  const fins=cur.version==="micro"?[]:(cur.version==="full"?S.fullFin:S.shortFin);
-  $("#mainHeading").textContent=cur.version==="micro"?"核心五式":"主課表"+(p.deload?"（減量：組數 −1、RPE 6）":"");
-  $("#exList").innerHTML=items.map((it,i)=>exHTML(it,i,p)).join("");
+  let items,fins=[],fmtHTML="";
+  if(type==="M"){items=mv.items;}
+  else if(type==="C"){const pool=cur.version==="full"?S.moves:S.movesShort;items=pool.map(m=>({...m,sets:fmt.rounds,reps:fmt.reps}));fmtHTML=`<div class="fmt" style="margin-bottom:8px"><span class="fn">${esc(fmt.name)}</span><span class="muted" style="font-size:13px">${esc(fmt.desc)}</span></div>`;}
+  else {items=cur.version==="full"?S.full:S.short;fins=cur.version==="full"?S.fullFin:S.shortFin;}
+  $("#mainHeading").textContent=type==="M"?mv.name:(type==="C"?"今天的循環":"主課表"+(p.deload?"（減量：組數 −1、RPE 6）":""));
+  $("#exList").innerHTML=fmtHTML+items.map((it,i)=>exHTML(it,i,p)).join("");
   $("#finCard").hidden=fins.length===0;
   $("#finList").innerHTML=fins.map((it,i)=>exHTML(it,100+i,p)).join("");
+  $("#bonusCard").hidden=cur.version==="micro";
+  $("#bonusPick").textContent=cur.bonus||"還沒骰。";$("#bonusPick").classList.toggle("muted",!cur.bonus);$("#bonusDone").hidden=!cur.bonus;
+  const bd=$("[data-bonusdone]");if(bd)bd.setAttribute("aria-pressed",cur.bonusDone?"true":"false");
   // scales
   $("#backScale").innerHTML=[0,1,2,3,4,5,6,7,8,9,10].map(v=>`<button class="small" data-back="${v}" aria-pressed="${cur.back===v}">${v}</button>`).join("");
   $("#feelScale").innerHTML=[["1","很累"],["2","偏累"],["3","一般"],["4","不錯"],["5","很好"]].map(([v,l])=>`<button class="small" data-feel="${v}" aria-pressed="${cur.feel===+v}" style="width:auto;padding:4px 10px">${l}</button>`).join("");
 }
 function exHTML(it,i,p){
-  let id=it.id; if(it.alt0&&p.phaseIdx===0) id=it.alt0;
-  const ex=EX[id]; const sc=scheme(it,p); const unit=it.u||ex.u;
+  const id=resolveId(it,i,p);
+  const ex=EX[id];const canSwap=(it.pool||[]).length>1; const sc=scheme(it,p); const unit=it.u||ex.u;
   const sug=unit==="kg"?suggest(id,sc.reps):null;
   const targetR=parseInt(String(sc.reps),10)||"";
   const isTime=/秒|分鐘/.test(sc.reps)||unit==="min"||unit==="sec";
@@ -589,9 +687,9 @@ function exHTML(it,i,p){
       <button class="done" data-done aria-pressed="false" aria-label="完成第${k+1}組">✓</button></div>`);
   }
   const rpeBtns=sc.rpe!==null?`<div class="rpe">RPE ${[6,7,8,9,10].map(v=>`<button class="small" data-rpe="${v}" aria-pressed="false">${v}</button>`).join("")}<small>目標 ${sc.rpe}</small></div>`:"";
-  return `<div class="ex" data-ex="${id}" data-role="${it.role||""}">
+  return `<div class="ex" data-ex="${id}" data-role="${it.role||""}" data-slot="${i}">
     <div class="head"><button class="ghost" style="border:0;padding:0;text-align:left;min-height:0" data-toggle><span class="name">${esc(ex.n)}</span> <small class="muted">${esc(ex.eq)}</small>${videoOf(id)?' <span class="pill" style="font-size:11px">▶ 影片</span>':""}</button>
-      <span class="rx num">${sc.sets} × ${esc(sc.reps)}</span></div>
+      <span class="row" style="gap:6px;flex-wrap:nowrap"><span class="rx num">${sc.sets} × ${esc(sc.reps)}</span>${canSwap?`<button class="small ghost swap" data-swap="${i}" title="換一個動作">換</button>`:""}</span></div>
     <div class="cue">${esc(ex.cue)}${videoHTML(id)}</div>
     ${sug?`<div class="note">${esc(sug.text)} <span class="muted num">（${sug.date}）</span></div>`:(unit==="kg"?`<div class="muted" style="font-size:13px">第一次：選一個能穩穩做完所有組、最後 2 下有點吃力的重量。</div>`:"")}
     <div class="sethead"><span>組</span><span>${unit==="kg"?"重量 kg":"器材"}</span><span>${rLabel}</span><span>完成</span></div>
@@ -608,10 +706,16 @@ function collectSession(){
   const doneAny=exs.some(e=>e.sets.some(s=>s.done));
   if(!doneAny){toast("至少勾選一組完成再儲存");return null;}
   const p=progression();
-  return {id:Date.now(),date:$("#sessDate").value||today(),type:cur.version==="micro"?"M":cur.type,version:cur.version,phase:p.phaseIdx,deload:p.deload,exercises:exs,back:cur.back,feel:cur.feel,notes:$("#notes").value.trim()};
+  const prs=[];for(const e of exs){const ws=e.sets.filter(t=>t.done&&t.w>0).map(t=>t.w);if(!ws.length)continue;const mx=Math.max(...ws);const prev=bestOf(e.id);if(prev!==null&&mx>prev)prs.push({id:e.id,w:mx,prev});}
+  let cardio=0;for(const e of exs){if((EX[e.id]||{}).u==="min")cardio+=e.sets.filter(t=>t.done).reduce((a,t)=>a+(t.r||0),0);}
+  const type=cur.version==="micro"?"M":cur.type;
+  if(type==="C"){cardio+=SESS.C.formats[typeCount("C")%SESS.C.formats.length].min;}
+  if(type==="M"&&SESS.M.variants[typeCount("M")%SESS.M.variants.length].name==="燃脂十分")cardio+=10;
+  return {id:Date.now(),date:$("#sessDate").value||today(),type,version:cur.version,phase:p.phaseIdx,deload:p.deload,exercises:exs,back:cur.back,feel:cur.feel,notes:$("#notes").value.trim(),prs,cardio,bonus:cur.bonus&&cur.bonusDone?cur.bonus:null};
 }
+function bestOf(exId){let b=null;for(const s of DB.sessions)for(const e of (s.exercises||[]))if(e.id===exId)for(const t of e.sets)if(t.done&&t.w>0&&(b===null||t.w>b))b=t.w;return b;}
 function resetTodayForm(){
-  const p=progression(); cur={type:p.nextType,version:DB.settings.travel?"short":"full",back:null,feel:null};
+  const p=progression(); cur={type:p.nextType,version:DB.settings.travel?"short":"full",back:null,feel:null,swaps:{},bonus:null,bonusDone:false};
   $("#notes").value=""; $("#sessDate").value=today(); renderToday();
 }
 
@@ -628,6 +732,18 @@ function renderHistory(){
   if((wc[tk]||0)>=goal)streak++;
   $("#tStreak").textContent=streak;
   $("#tTotal").textContent=DB.sessions.filter(s=>s.version!=="micro").length;
+  // month
+  const ym=today().slice(0,7);$("#monthLabel").textContent=ym;
+  const ms_=DB.sessions.filter(s=>s.date.startsWith(ym));
+  $("#tMonth").textContent=ms_.reduce((a,s)=>a+credit(s),0).toString().replace(".5","½");
+  const ton=s=>s.exercises.reduce((a,e)=>a+e.sets.reduce((b,t)=>b+(t.done&&t.w>0?t.w*(t.r||0):0),0),0);
+  $("#tTon").textContent=Math.round(ms_.reduce((a,s)=>a+ton(s),0)).toLocaleString();
+  $("#tCardio").textContent=Math.round(ms_.reduce((a,s)=>a+(s.cardio||0),0));
+  const allTon=DB.sessions.reduce((a,s)=>a+ton(s),0);const nPR=DB.sessions.reduce((a,s)=>a+((s.prs||[]).length),0);const types=new Set(DB.sessions.map(s=>s.type));
+  const BADGES=[["第一堂",DB.sessions.length>=1],["四堂全制霸",["A","B","C","D"].every(t=>types.has(t))],["連續 4 週達標",streak>=4],["完成一個階段",DB.sessions.filter(s=>s.version!=="micro").length>=12],["首個新紀錄",nPR>=1],["10 噸俱樂部",allTon>=10000],["出差也不停",DB.sessions.some(s=>s.version==="short")],["加碼狂",DB.sessions.filter(s=>s.bonus).length>=5]];
+  $("#badges").innerHTML=BADGES.map(([n,on])=>`<span class="badge ${on?"on":""}">${on?"★ ":"☆ "}${n}</span>`).join("");
+  const prs=[];for(const s of [...DB.sessions].sort((a,b)=>b.date.localeCompare(a.date)))for(const x of (s.prs||[]))prs.push(`${s.date.slice(5)} ${EX[x.id]?EX[x.id].n:x.id} <span class="pr">${x.w} kg</span>`);
+  $("#prList").innerHTML=prs.length?`<span class="muted">最近新紀錄：</span>${prs.slice(0,4).join(" · ")}`:`<span class="muted">還沒有新紀錄。重量超過以往就會自動標記 🏆。</span>`;
   // heat
   const byDay={};for(const s of DB.sessions){byDay[s.date]=Math.max(byDay[s.date]||0,s.version==="micro"?1:(s.version==="short"?2:3));}
   const start=addDays(thisMon,-7*11); let h="";
@@ -637,7 +753,7 @@ function renderHistory(){
   const weeks=[];for(let i=11;i>=0;i--){const k=fmtDate(addDays(thisMon,-7*i));weeks.push({k,v:wc[k]||0});}
   drawBars($("#chartWeek"),weeks,goal);
   // lift chart
-  const liftIds=["kb_dl","db_rdl","goblet","db_row","kb_swing","db_ohp","stepup","split","suitcase","farmer","hipthrust"];
+  const liftIds=["kb_dl","db_rdl","kb_sumo","goblet","hipthrust","rev_lunge","split","db_press","db_ohp","db_row","lat_raise","kb_swing","thruster","suitcase","farmer"];
   $("#liftSel").innerHTML=liftIds.map(id=>`<option value="${id}" ${id===liftSel?"selected":""}>${esc(EX[id].n)}</option>`).join("");
   const pts=[];for(const s of [...DB.sessions].sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id)){const e=(s.exercises||[]).find(x=>x.id===liftSel);if(!e)continue;const ws=e.sets.filter(t=>t.done&&t.w>0).map(t=>t.w);if(ws.length)pts.push({k:s.date,v:Math.max(...ws),rpe:e.rpe});}
   drawLine($("#chartLift"),pts.slice(-20));
@@ -650,8 +766,8 @@ function renderHistory(){
   $("#histList").innerHTML=ss.length?ss.slice(0,40).map(s=>{
     const done=s.exercises.filter(e=>e.sets.some(t=>t.done));
     const top=done.filter(e=>e.sets.some(t=>t.w)).map(e=>`${EX[e.id]?EX[e.id].n:e.id} ${Math.max(...e.sets.filter(t=>t.done).map(t=>t.w||0))}kg`).slice(0,3).join(" · ");
-    const vlabel={full:"完整",short:"飯店",micro:"微量"}[s.version];
-    return `<div class="hitem"><span class="pill ${s.type}">${s.type==="M"?"微量":s.type}</span><div><div class="d">${s.date} · ${vlabel}版${s.deload?" · 減量":""}${s.back!=null?` · 下背 ${s.back}`:""}</div><div class="s">${esc(top||done.map(e=>EX[e.id]?EX[e.id].n:e.id).slice(0,3).join(" · "))}${s.notes?` — ${esc(s.notes)}`:""}</div></div><button class="ghost" data-del="${s.id}">刪除</button></div>`;
+    const vlabel={full:"完整",short:"飯店",micro:"微量"}[s.version];const pr=(s.prs||[]).length?" 🏆":"";
+    return `<div class="hitem"><span class="pill ${s.type}">${s.type==="M"?"微量":s.type}</span><div><div class="d">${s.date} · ${vlabel}版${s.deload?" · 減量":""}${s.back!=null?` · 下背 ${s.back}`:""}${pr}</div><div class="s">${esc(top||done.map(e=>EX[e.id]?EX[e.id].n:e.id).slice(0,3).join(" · "))}${s.bonus?` · 加碼：${esc(s.bonus)}`:""}${s.notes?` — ${esc(s.notes)}`:""}</div></div><button class="ghost" data-del="${s.id}">刪除</button></div>`;
   }).join(""):`<p class="muted">還沒有紀錄。到「今天」完成第一堂 A 堂吧。</p>`;
 }
 function drawBars(svg,data,goal){
@@ -680,8 +796,9 @@ function drawLine(svg,pts){
 
 /* ========= GUIDE TAB ========= */
 function renderGuide(){
-  const used=new Set();for(const t of ["A","B","C"]){for(const k of ["full","short","fullFin","shortFin"])(SESS[t][k]||[]).forEach(i=>{used.add(i.id);if(i.alt0)used.add(i.alt0);});WARM[t].forEach(w=>used.add(w[0]));}
-  SESS.M.micro.forEach(i=>used.add(i.id));
+  const used=new Set();const addItems=arr=>(arr||[]).forEach(i=>{(i.pool||[i.id]).forEach(x=>used.add(x));if(i.alt0)used.add(i.alt0);});
+  for(const t of ["A","B","C","D","M"]){for(const k of ["full","short","fullFin","shortFin","moves","movesShort"])addItems(SESS[t][k]);WARM[t].forEach(w=>used.add(w[0]));}
+  SESS.M.variants.forEach(v=>addItems(v.items));
   $("#exLib").innerHTML=[...used].map(id=>`<details data-exid="${id}"><summary>${esc(EX[id].n)} <small class="muted" style="font-weight:400">${esc(EX[id].eq)}${videoOf(id)?" · ▶ 有影片":""}</small></summary><div class="body">${esc(EX[id].cue)}<div style="margin-top:10px">${videoHTML(id)}</div><div class="vidform"><input type="url" inputmode="url" placeholder="貼上示範影片網址（YouTube 或任何連結）" value="${esc(videoOf(id)||"")}" aria-label="${esc(EX[id].n)} 影片網址"><button class="small" data-savevid>儲存</button></div>${videoOf(id)?'<button class="small ghost" data-delvid style="margin-top:6px">移除影片</button>':""}</div></details>`).join("");
 }
 
@@ -697,14 +814,17 @@ $$("nav.tabs [role=tab]").forEach(b=>b.addEventListener("click",()=>showTab(b.da
 $("#tab-today").addEventListener("click",e=>{
   const t=e.target.closest("button");if(!t)return;
   if(t.dataset.v){cur.version=t.dataset.v;renderToday();return;}
-  if(t.id==="btnPrevType"){cur.type=ROT[(ROT.indexOf(cur.type)+1)%3];renderToday();return;}
+  if(t.id==="btnPrevType"){cur.type=ROT[(ROT.indexOf(cur.type)+1)%ROT.length];cur.swaps={};renderToday();return;}
+  if(t.dataset.swap!==undefined){const k=+t.dataset.swap;cur.swaps[k]=(cur.swaps[k]||0)+1;renderToday();return;}
+  if(t.id==="btnDice"){let b;do{b=BONUS[Math.floor(Math.random()*BONUS.length)];}while(b===cur.bonus&&BONUS.length>1);cur.bonus=b;cur.bonusDone=false;renderToday();return;}
+  if(t.dataset.bonusdone!==undefined){cur.bonusDone=!cur.bonusDone;t.setAttribute("aria-pressed",cur.bonusDone?"true":"false");return;}
   if(t.dataset.done!==undefined){t.setAttribute("aria-pressed",t.getAttribute("aria-pressed")==="true"?"false":"true");return;}
   if(t.dataset.toggle!==undefined){t.closest(".ex").classList.toggle("open");return;}
   if(t.dataset.rpe){const box=t.closest(".rpe");box.querySelectorAll("[data-rpe]").forEach(b=>b.setAttribute("aria-pressed",b===t?"true":"false"));return;}
   if(t.dataset.back!==undefined){cur.back=+t.dataset.back;$$("#backScale button").forEach(b=>b.setAttribute("aria-pressed",b===t));return;}
   if(t.dataset.feel){cur.feel=+t.dataset.feel;$$("#feelScale button").forEach(b=>b.setAttribute("aria-pressed",b===t));return;}
   if(t.dataset.timer){startTimer(+t.dataset.timer);return;}
-  if(t.id==="btnSave"){const s=collectSession();if(!s)return;DB.sessions.push(s);save();toast(`已儲存 ${s.type==="M"?"微量":s.type+" 堂"} · 下一堂 ${ROT[(ROT.indexOf(cur.type)+(cur.version==="micro"?0:1))%3]}`);resetTodayForm();showTab("history");}
+  if(t.id==="btnSave"){const s=collectSession();if(!s)return;DB.sessions.push(s);save();toast(s.prs.length?`🏆 新紀錄！${s.prs.map(x=>EX[x.id].n+" "+x.w+" kg").join("、")}`:`已儲存 ${s.type==="M"?"微量":s.type+" 堂"} · 下一堂 ${ROT[(ROT.indexOf(cur.type)+(cur.version==="micro"?0:1))%ROT.length]}`);resetTodayForm();showTab("history");}
 });
 let timerT=null;
 function startTimer(sec){clearInterval(timerT);let left=sec;const d=$("#timerDisp");const tick=()=>{d.textContent=`${Math.floor(left/60)}:${pad(left%60)}`;if(left<=0){clearInterval(timerT);d.textContent="GO";if(navigator.vibrate)try{navigator.vibrate([200,100,200]);}catch(e){}return;}left--;};tick();timerT=setInterval(tick,1000);}
