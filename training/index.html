@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0F6E6D">
+<title>下背強化訓練系統</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: one-column coaching card deck; sticky tab bar at the bottom like a phone app; data in mono. */
+:root{
+  --bg:#EEF1F3; --surface:#FFFFFF; --surface-2:#E3E8EC; --line:#CCD4DA;
+  --ink:#15222C; --ink-2:#55646F; --ink-3:#8795A0;
+  --accent:#0F6E6D; --accent-ink:#FFFFFF; --accent-soft:#D6ECEA;
+  --a:#0F6E6D; --b:#4D5BB3; --c:#B8651B; --m:#6E7A84;
+  --good:#2F7D4F; --warn:#B07A12; --bad:#B3402F;
+  --font-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --font-data:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --radius:12px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#101619; --surface:#19222A; --surface-2:#222D36; --line:#2F3C46;
+  --ink:#E8EDF0; --ink-2:#A6B3BC; --ink-3:#73828D;
+  --accent:#3FB3AF; --accent-ink:#081615; --accent-soft:#163736;
+  --a:#3FB3AF; --b:#8E9BEA; --c:#E09A4F; --m:#8C9AA5;
+  --good:#5BBE86; --warn:#E0B04A; --bad:#E57B6A; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#101619; --surface:#19222A; --surface-2:#222D36; --line:#2F3C46;
+  --ink:#E8EDF0; --ink-2:#A6B3BC; --ink-3:#73828D;
+  --accent:#3FB3AF; --accent-ink:#081615; --accent-soft:#163736;
+  --a:#3FB3AF; --b:#8E9BEA; --c:#E09A4F; --m:#8C9AA5;
+  --good:#5BBE86; --warn:#E0B04A; --bad:#E57B6A; color-scheme:dark }
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:720px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:12px 96px}
+header.top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;padding-block:8px 14px}
+header.top h1{margin:0;font-size:22px;font-weight:900;letter-spacing:.01em;text-wrap:balance}
+header.top .sub{color:var(--ink-2);font-size:13px}
+.eyebrow{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);font-weight:700}
+.num{font-family:var(--font-data);font-variant-numeric:tabular-nums}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px}
+.stack{display:grid;gap:12px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row>*{min-width:0}
+.grow{flex:1 1 auto}
+h2{font-size:17px;margin:0 0 8px;font-weight:700}
+h3{font-size:15px;margin:0 0 6px;font-weight:700}
+p{margin:0 0 8px}
+small,.muted{color:var(--ink-2)}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:700;background:var(--surface-2);color:var(--ink-2);white-space:nowrap}
+.pill.A{background:color-mix(in srgb,var(--a) 18%,transparent);color:var(--a)}
+.pill.B{background:color-mix(in srgb,var(--b) 18%,transparent);color:var(--b)}
+.pill.C{background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c)}
+.pill.M{background:color-mix(in srgb,var(--m) 18%,transparent);color:var(--m)}
+button,.btn{font:inherit;font-weight:700;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 14px;cursor:pointer;min-height:40px}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button.ghost{background:transparent}
+button.small{padding:5px 10px;min-height:32px;font-size:13px}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-height:40px}
+input[type=number]{font-family:var(--font-data);font-variant-numeric:tabular-nums;width:72px;text-align:right}
+input[type=date]{font-family:var(--font-data)}
+textarea{width:100%;min-height:90px;font-family:var(--font-data);font-size:12px}
+label.f{display:grid;gap:4px;font-size:13px;color:var(--ink-2)}
+/* tabs */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-bottom:env(safe-area-inset-bottom,0px)}
+nav.tabs .in{max-width:720px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+nav.tabs button{border:0;border-radius:0;background:transparent;color:var(--ink-3);padding:10px 4px 8px;min-height:52px;display:grid;justify-items:center;gap:2px;font-size:12px;font-weight:700}
+nav.tabs button .ico{font-size:18px;line-height:1}
+nav.tabs button[aria-selected="true"]{color:var(--accent);box-shadow:inset 0 3px 0 var(--accent)}
+/* today */
+.hero{display:grid;gap:10px;border-left:4px solid var(--accent)}
+.hero .big{font-size:28px;font-weight:900;line-height:1.15}
+.phasebar{height:8px;background:var(--surface-2);border-radius:999px;overflow:hidden}
+.phasebar>i{display:block;height:100%;background:var(--accent)}
+.segs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.segs button{padding:8px 6px;font-size:13px;display:grid;gap:2px}
+.segs button small{font-weight:400;font-size:11px;color:inherit;opacity:.8}
+.ex{display:grid;gap:8px;padding-block:12px;border-top:1px solid var(--line)}
+.ex:first-of-type{border-top:0}
+.ex .head{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.ex .name{font-weight:700;font-size:16px}
+.ex .rx{color:var(--ink-2);font-size:13px}
+.ex .cue{font-size:13px;color:var(--ink-2);display:none}
+.ex.open .cue{display:block}
+.sets{display:grid;gap:6px}
+.set{display:grid;grid-template-columns:34px 1fr 1fr 44px;gap:6px;align-items:center}
+.set .k{font-size:12px;color:var(--ink-3);font-family:var(--font-data)}
+.set input{width:100%;min-height:38px}
+.set .done{width:44px;height:38px;border-radius:8px;border:1px solid var(--line);background:var(--surface);font-weight:900;color:var(--ink-3)}
+.set .done[aria-pressed="true"]{background:var(--good);border-color:var(--good);color:#fff}
+.sethead{display:grid;grid-template-columns:34px 1fr 1fr 44px;gap:6px;font-size:11px;color:var(--ink-3);letter-spacing:.06em}
+.rpe{display:flex;gap:4px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--ink-2)}
+.rpe button{min-height:32px;padding:4px 0;width:36px;font-family:var(--font-data)}
+.warm{display:grid;gap:4px;font-size:14px}
+.warm li{display:flex;justify-content:space-between;gap:8px}
+ul.clean{list-style:none;padding:0;margin:0}
+.timer{display:flex;gap:8px;align-items:center}
+.timer .t{font-family:var(--font-data);font-size:26px;font-weight:600;min-width:72px;text-align:center}
+.sticky-save{position:sticky;bottom:72px;z-index:5}
+.sticky-save button{width:100%;box-shadow:0 6px 18px color-mix(in srgb,var(--ink) 18%,transparent)}
+/* history */
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tile{background:var(--surface-2);border-radius:10px;padding:10px 12px}
+.tile .v{font-family:var(--font-data);font-size:22px;font-weight:600;line-height:1.1}
+.tile .l{font-size:12px;color:var(--ink-2)}
+.heat{display:grid;grid-template-columns:repeat(12,1fr);gap:3px}
+.heat .wk{display:grid;gap:3px}
+.heat .d{aspect-ratio:1;border-radius:3px;background:var(--surface-2)}
+.heat .d.l1{background:color-mix(in srgb,var(--accent) 35%,var(--surface-2))}
+.heat .d.l2{background:color-mix(in srgb,var(--accent) 70%,var(--surface-2))}
+.heat .d.l3{background:var(--accent)}
+.heat .d.today{outline:2px solid var(--ink);outline-offset:-2px}
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.chart text{font-family:var(--font-data);font-size:11px;fill:var(--ink-3)}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .bar{fill:var(--accent);opacity:.85}
+.chart .bar.low{fill:var(--ink-3);opacity:.5}
+.chart .ln{fill:none;stroke:var(--accent);stroke-width:2;stroke-linejoin:round}
+.chart .dot{fill:var(--accent);stroke:var(--surface);stroke-width:2}
+.chart .goal{stroke:var(--ink-2);stroke-dasharray:4 4}
+.chart .lbl{fill:var(--ink);font-weight:600}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;padding:6px 8px;border-radius:6px;transform:translate(-50%,-120%);z-index:30;font-family:var(--font-data);white-space:nowrap}
+.hist{display:grid;gap:8px}
+.hitem{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.hitem .d{font-family:var(--font-data);font-size:13px;color:var(--ink-2)}
+.hitem .s{font-size:13px;color:var(--ink-2)}
+.hitem button{min-height:32px;padding:4px 10px;font-size:12px}
+table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--ink-3);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+td.num,th.num{text-align:right}
+.tablewrap{overflow-x:auto}
+/* guide */
+details{border:1px solid var(--line);border-radius:10px;background:var(--surface);padding:0 14px}
+details summary{cursor:pointer;padding:12px 0;font-weight:700;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details summary::after{content:"+";color:var(--ink-3);font-family:var(--font-data);font-size:18px}
+details[open] summary::after{content:"–"}
+details .body{padding-bottom:14px;color:var(--ink-2);font-size:14px}
+details .body ul{padding-left:18px;margin:6px 0}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
+.kv dt{color:var(--ink-3)}
+.kv dd{margin:0}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:700;z-index:40;opacity:0;transition:opacity .2s}
+.toast.show{opacity:1}
+.danger{color:var(--bad)}
+.note{background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--ink)}
+.exlib .cue{display:block}
+@media (max-width:420px){ .tiles{grid-template-columns:repeat(3,1fr)} .tile .v{font-size:18px} .set{grid-template-columns:28px 1fr 1fr 40px} .sethead{grid-template-columns:28px 1fr 1fr 40px} }
+@media (prefers-reduced-motion: reduce){ *{transition:none!important} }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">Home Strength · 40+ Women</div>
+      <h1 id="title">訓練系統</h1>
+      <div class="sub" id="subtitle"></div>
+    </div>
+    <div class="pill" id="travelPill" hidden>✈ 出國模式</div>
+  </header>
+
+  <!-- ===== TODAY ===== -->
+  <section id="tab-today" class="stack" role="tabpanel">
+    <div class="card hero">
+      <div class="row" style="justify-content:space-between">
+        <span class="eyebrow" id="phaseEyebrow">第 1 階段 · 基礎期</span>
+        <span class="num muted" id="phaseCount"></span>
+      </div>
+      <div class="phasebar"><i id="phaseFill" style="width:0%"></i></div>
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div>
+          <div class="eyebrow">下一堂</div>
+          <div class="big" id="nextTitle"></div>
+          <div class="muted" id="nextDesc"></div>
+        </div>
+        <div class="row" style="gap:6px">
+          <button class="small ghost" id="btnPrevType" title="改做別堂">換堂 ↻</button>
+        </div>
+      </div>
+      <div>
+        <div class="eyebrow" style="margin-bottom:6px">今天有多少時間？</div>
+        <div class="segs" id="versionSegs"></div>
+      </div>
+      <div class="row" style="justify-content:space-between">
+        <label class="f">日期 <input type="date" id="sessDate"></label>
+        <div class="timer">
+          <span class="eyebrow">休息</span>
+          <span class="t num" id="timerDisp">0:00</span>
+          <button class="small" data-timer="60">60s</button>
+          <button class="small" data-timer="90">90s</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" id="warmCard">
+      <h2>熱身 <small class="muted">約 5 分鐘，每堂必做</small></h2>
+      <ul class="clean warm" id="warmList"></ul>
+    </div>
+
+    <div class="card">
+      <h2 id="mainHeading">主課表</h2>
+      <p class="muted" style="font-size:13px">點動作名稱可看動作要領。重量欄會帶入上次紀錄與建議；每組完成就按 ✓。</p>
+      <div id="exList"></div>
+    </div>
+
+    <div class="card" id="finCard">
+      <h2>收尾 <small class="muted">心肺 / 負重行走</small></h2>
+      <div id="finList"></div>
+    </div>
+
+    <div class="card">
+      <h2>今天的狀態</h2>
+      <div class="stack">
+        <div>
+          <div class="eyebrow" style="margin-bottom:6px">下背感覺（0 = 完全沒事，10 = 很痛）</div>
+          <div class="rpe" id="backScale"></div>
+          <small class="muted">目標：訓練後 ≤ 3。若 ≥ 5 或有痛麻放射到腿，請停止並休息、必要時就醫。</small>
+        </div>
+        <div>
+          <div class="eyebrow" style="margin-bottom:6px">整體感受</div>
+          <div class="rpe" id="feelScale"></div>
+        </div>
+        <label class="f">備註（睡眠、時差、哪個動作不順⋯）<textarea id="notes" style="min-height:60px;font-family:var(--font-body);font-size:14px"></textarea></label>
+      </div>
+    </div>
+
+    <div class="sticky-save"><button class="primary" id="btnSave">儲存這堂訓練</button></div>
+  </section>
+
+  <!-- ===== HISTORY ===== -->
+  <section id="tab-history" class="stack" role="tabpanel" hidden>
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:8px">
+        <h2 style="margin:0">本週進度</h2>
+        <span class="muted num" id="weekRange"></span>
+      </div>
+      <div class="tiles">
+        <div class="tile"><div class="v num" id="tWeek">0/3</div><div class="l">本週堂數</div></div>
+        <div class="tile"><div class="v num" id="tStreak">0</div><div class="l">連續達標週</div></div>
+        <div class="tile"><div class="v num" id="tTotal">0</div><div class="l">累計堂數</div></div>
+      </div>
+      <p class="muted" style="font-size:13px;margin-top:8px">完整版 / 飯店版算 1 堂，10 分鐘微量版算 0.5 堂。一週達 3 堂即達標。</p>
+    </div>
+
+    <div class="card">
+      <h2>近 12 週出席</h2>
+      <div class="heat" id="heat"></div>
+      <div class="row" style="justify-content:space-between;margin-top:6px"><small class="muted" id="heatFrom"></small><small class="muted">本週</small></div>
+    </div>
+
+    <div class="card">
+      <h2>每週訓練量 <small class="muted">虛線 = 目標 3 堂</small></h2>
+      <svg class="chart" id="chartWeek" viewBox="0 0 640 200" role="img" aria-label="近 12 週每週訓練堂數"></svg>
+    </div>
+
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <h2 style="margin:0">力量進步</h2>
+        <select id="liftSel"></select>
+      </div>
+      <p class="muted" style="font-size:13px">每堂該動作最重一組的重量（kg）。</p>
+      <svg class="chart" id="chartLift" viewBox="0 0 640 220" role="img" aria-label="主要動作重量進步"></svg>
+    </div>
+
+    <div class="card">
+      <h2>身體數據</h2>
+      <div class="row">
+        <label class="f">日期 <input type="date" id="mDate"></label>
+        <label class="f">體重 kg <input type="number" step="0.1" id="mWeight" placeholder="62.0"></label>
+        <label class="f">腰圍 cm <input type="number" step="0.5" id="mWaist" placeholder="—"></label>
+        <label class="f">下背 0-10 <input type="number" min="0" max="10" id="mBack" placeholder="0"></label>
+        <button id="btnMetric" style="align-self:end">記錄</button>
+      </div>
+      <div class="tablewrap" style="margin-top:10px"><table id="metricTable"></table></div>
+    </div>
+
+    <div class="card">
+      <h2>訓練紀錄</h2>
+      <div class="hist" id="histList"></div>
+    </div>
+  </section>
+
+  <!-- ===== GUIDE ===== -->
+  <section id="tab-guide" class="stack" role="tabpanel" hidden>
+    <div class="card">
+      <h2>這套系統怎麼運作</h2>
+      <p>這不是「星期一練什麼」的課表，而是<strong>輪替制</strong>：三堂課 A → B → C 循環，哪天有空就做下一堂。時間不固定、出國、加班都沒關係，系統永遠知道下一堂該做什麼。</p>
+      <dl class="kv">
+        <dt>目標頻率</dt><dd>每週 3 堂（任何版本都算），忙碌週至少 2 堂微量版保住習慣</dd>
+        <dt>A 堂</dt><dd>髖主導 · 下背與後側鏈（硬舉、RDL、負重行走）</dd>
+        <dt>B 堂</dt><dd>推拉 · 上半身與抗旋轉核心（划船、伏地挺身、帕洛夫推）</dd>
+        <dt>C 堂</dt><dd>全身力量 · 心肺（盪壺、分腿蹲、肩推、間歇）</dd>
+        <dt>三種版本</dt><dd>完整版 45 分 / 飯店版 25 分（彈力繩＋徒手）/ 微量版 10 分（核心五式）</dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <h2>週期化：12 堂一個階段</h2>
+      <p>像運動員一樣分階段推進，但用「完成堂數」而不是日曆來計算，所以中斷再回來也不會亂掉。每階段的最後 3 堂是<strong>減量堂</strong>：組數減一、強度放輕，讓身體吸收進步。</p>
+      <div class="tablewrap"><table>
+        <thead><tr><th>階段</th><th>重點</th><th>主動作</th><th>RPE</th></tr></thead>
+        <tbody>
+          <tr><td>1 基礎期</td><td>學會髖屈伸、建立下背耐力</td><td>3 × 12</td><td>6–7</td></tr>
+          <tr><td>2 強化期</td><td>增加負重、肌肉量</td><td>3 × 10</td><td>7–8</td></tr>
+          <tr><td>3 力量期</td><td>較重、較少次數，骨密度刺激</td><td>4 × 6–8</td><td>8</td></tr>
+        </tbody></table></div>
+      <p class="muted" style="font-size:13px;margin-top:8px">第 3 階段後回到第 2 階段重新循環（重量會比上一輪高）。RPE = 自覺費力程度：7 代表「還能再做 3 下」，8 代表「還能 2 下」。</p>
+    </div>
+
+    <div class="card">
+      <h2>重量怎麼加（自動調節）</h2>
+      <ul style="margin:0;padding-left:18px">
+        <li>所有組都做到目標次數、RPE ≤ 7 → 下次<strong>加 1–2 kg</strong>（壺鈴固定重量時改為每組 +1 下，到上限再換重壺鈴）。</li>
+        <li>RPE 8 → 維持重量。</li>
+        <li>RPE ≥ 9 或次數沒達標 → 維持或減 10%。</li>
+        <li>下背感覺 ≥ 5 → 下一堂改飯店版或微量版，主動作用徒手。</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>給 40+ 女性的重點</h2>
+      <ul style="margin:0;padding-left:18px">
+        <li><strong>骨密度</strong>：更年期前後每年可能流失 1–2% 骨量，負重的硬舉、深蹲、負重行走是最有效的刺激。</li>
+        <li><strong>肌肉量</strong>：40 歲後每十年約流失 3–8% 肌肉，每週 2–3 次阻力訓練可以逆轉。</li>
+        <li><strong>蛋白質</strong>：每公斤體重 1.2–1.6 g，以 62 kg 來說約 75–100 g／天，分 3–4 餐吃。</li>
+        <li><strong>呼吸與骨盆底</strong>：出力時吐氣，不要憋氣硬撐；提重物前先收緊核心。</li>
+        <li><strong>關節友善</strong>：熱身不省略、動作速度放慢（下放 3 秒）、痛就停（酸脹可以，刺痛不行）。</li>
+        <li><strong>恢復</strong>：兩堂之間至少隔一天；睡眠 7 小時以上比多練一堂更重要。</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>出國／忙碌週規則</h2>
+      <ul style="margin:0;padding-left:18px">
+        <li>帶一條彈力繩就能做所有飯店版動作。</li>
+        <li>開啟「出國模式」後預設顯示飯店版，週目標降為 2 堂。</li>
+        <li>最低底線：每天早上 10 分鐘微量版（核心五式），保護下背、維持習慣。</li>
+        <li>回國後直接接續下一堂，不用「補課」；中斷超過 3 週，建議從當前階段第 1 堂重來。</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>動作庫與要領</h2>
+      <div class="exlib" id="exLib"></div>
+    </div>
+
+    <div class="card">
+      <p class="muted" style="font-size:13px;margin:0">此課表為一般健康成人的居家訓練建議，不是醫療建議。若有椎間盤、骨質疏鬆、高血壓等病史或懷孕，開始前請先諮詢醫師或物理治療師。</p>
+    </div>
+  </section>
+
+  <!-- ===== SETTINGS ===== -->
+  <section id="tab-settings" class="stack" role="tabpanel" hidden>
+    <div class="card">
+      <h2>個人資料</h2>
+      <div class="row">
+        <label class="f">名字 <input type="text" id="sName" placeholder="她的名字"></label>
+        <label class="f">出生年 <input type="number" id="sYear" placeholder="1981"></label>
+        <label class="f">身高 cm <input type="number" id="sHeight" placeholder="171"></label>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <label class="f">啞鈴每次加重 kg <input type="number" step="0.5" id="sInc" placeholder="1"></label>
+        <label class="f">出國模式
+          <button id="sTravel" aria-pressed="false" style="min-width:120px">關閉</button>
+        </label>
+      </div>
+      <div style="margin-top:10px"><button class="primary" id="btnSaveSettings">儲存設定</button></div>
+    </div>
+
+    <div class="card">
+      <h2>備份與同步</h2>
+      <p class="muted" style="font-size:13px">資料只存在這台裝置的瀏覽器。換手機或清除瀏覽資料前，請匯出備份。</p>
+      <div class="row">
+        <button id="btnExport">產生備份文字</button>
+        <button id="btnCopy">複製</button>
+        <a class="btn" id="dlLink" download="training-backup.json" hidden>下載 .json</a>
+      </div>
+      <textarea id="ioText" placeholder="備份內容會出現在這裡；要還原時，把備份貼在這裡再按「匯入」。"></textarea>
+      <div class="row" style="margin-top:8px">
+        <button id="btnImport">匯入（合併）</button>
+        <input type="file" id="fileImport" accept="application/json" style="min-height:40px">
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 class="danger">重設</h2>
+      <p class="muted" style="font-size:13px">刪除所有訓練紀錄與身體數據（設定會保留）。需按兩次確認。</p>
+      <button id="btnReset">刪除所有紀錄</button>
+    </div>
+  </section>
+</div>
+
+<nav class="tabs" role="tablist"><div class="in">
+  <button role="tab" data-tab="today" aria-selected="true"><span class="ico">▶</span>今天</button>
+  <button role="tab" data-tab="history" aria-selected="false"><span class="ico">▦</span>紀錄</button>
+  <button role="tab" data-tab="guide" aria-selected="false"><span class="ico">☰</span>課表說明</button>
+  <button role="tab" data-tab="settings" aria-selected="false"><span class="ico">⚙</span>設定</button>
+</div></nav>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ========= PROGRAM DATA ========= */
+const EX = {
+  catcow:{n:"貓牛式",eq:"徒手",u:"reps",cue:"四足跪姿。吸氣時腰往下塌、看前方；吐氣時背拱起、看肚臍。每個方向 3–4 秒，當作脊椎的開機動作。"},
+  deadbug:{n:"死蟲式",eq:"徒手",u:"reps",cue:"仰躺，手舉直、膝蓋彎 90 度。吐氣時對側手腳慢慢伸出，腰要全程貼住地面；吸氣收回。腰一離地就是做太快。"},
+  glutebridge:{n:"臀橋",eq:"徒手",u:"reps",cue:"仰躺屈膝，腳跟踩地把髖推到身體一直線，頂點夾臀 2 秒。用屁股出力，不要靠腰往上頂。"},
+  birddog:{n:"鳥狗式",eq:"徒手",u:"reps",cue:"四足跪姿，對側手腳同時伸直、停 3 秒，骨盆不能轉。想像腰上放一杯水，水不能倒。這是下背穩定度最重要的動作。"},
+  kb_dl:{n:"壺鈴硬舉",eq:"壺鈴",u:"kg",cue:"腳與肩同寬，壺鈴放在雙腳中間。先把屁股往後推、膝微彎、背打直像一塊板子，用臀部與大腿後側把壺鈴拉起來站直，吐氣。下放時先推屁股，不是先彎腰。"},
+  db_rdl:{n:"啞鈴羅馬尼亞硬舉",eq:"啞鈴",u:"kg",cue:"雙手持啞鈴站直。膝蓋微彎固定，髖往後推，啞鈴沿著大腿滑到小腿中段、感覺大腿後側拉緊即停；全程背部中立。用臀部把身體拉回來。每下 3 秒下放。"},
+  stepup:{n:"登階",eq:"登階板 + 啞鈴",u:"kg",cue:"整個腳掌踩穩階板，用前腳把身體推上去，後腳不要蹬地。下來時慢（3 秒）。先徒手，穩了再拿啞鈴。"},
+  superman:{n:"俯臥背伸展（超人式）",eq:"徒手",u:"reps",cue:"趴著、手往前伸。手和腳同時抬離地面 2–3 公分、停 2 秒，眼睛看地板，不要仰頭。目標是下背肌群的耐力，不是抬得高。"},
+  suitcase:{n:"單手提箱行走",eq:"壺鈴",u:"kg",cue:"一手提壺鈴走路，身體完全不能歪，像頭頂放一杯水。走 30 秒（約 20–30 步）換手。這是訓練「側核心保護下背」最實用的動作。"},
+  band_gm:{n:"彈力繩早安式",eq:"彈力繩",u:"reps",cue:"繩踩在腳下、繞到肩後。髖往後推、上身前傾到約 45 度（背部打直），再用臀部站直。輕負荷、高次數，當作硬舉的補強。"},
+  goblet:{n:"高腳杯深蹲",eq:"壺鈴 / 啞鈴",u:"kg",cue:"壺鈴抱在胸前，腳尖微外。往下坐到大腿至少與地面平行，膝蓋朝腳尖方向、全程挺胸。站起時吐氣。"},
+  db_row:{n:"單手啞鈴划船",eq:"啞鈴",u:"kg",cue:"一手撐在登階板或椅子上，背打直與地面近平行。另一手把啞鈴拉到腰側，手肘往後不往外，頂點背肌夾緊 1 秒。"},
+  pushup:{n:"伏地挺身",eq:"徒手 / 登階板",u:"reps",cue:"手撐在登階板上可降低難度，撐地面難度較高。身體從頭到腳跟一直線，核心收緊；胸口碰到板子再推起。做不到就把手墊更高，不要跪著做。"},
+  pallof:{n:"帕洛夫推",eq:"彈力繩",u:"reps",cue:"繩固定在門把或柱子，側身站。雙手把繩往前推到伸直、停 2 秒再收回，身體不被繩拉轉。抗旋轉核心是保護下背的關鍵。"},
+  pullapart:{n:"彈力繩肩後拉",eq:"彈力繩",u:"reps",cue:"雙手與肩同高持繩，把繩拉開到碰到胸前，肩胛往後夾。改善圓肩、讓硬舉時背更容易打直。"},
+  sideplank:{n:"側棒式",eq:"徒手",u:"sec",cue:"手肘在肩膀正下方，髖抬高讓身體一直線。屁股不要掉。覺得太難可屈膝做。"},
+  farmer:{n:"農夫走路",eq:"啞鈴",u:"kg",cue:"雙手各持啞鈴，肩膀往後下沉、挺胸，有節奏地走。核心像準備被輕輕打一拳一樣收緊。拿你能穩穩走 40 秒的重量。"},
+  kb_swing:{n:"壺鈴盪壺",eq:"壺鈴",u:"kg",cue:"髖像彈簧：屁股往後、壺鈴甩到胯下，再爆發式挺髖讓壺鈴飄到胸口高度。手臂不出力、不聳肩，頂點吐氣。基礎期先用壺鈴硬舉代替，髖屈伸熟練後再加入。"},
+  split:{n:"分腿蹲 / 後腳墊高分腿蹲",eq:"啞鈴 + 登階板",u:"kg",cue:"後腳腳背踩在登階板上，前腿下蹲到大腿近水平，重心放在前腳跟。先徒手，再雙手持啞鈴。"},
+  db_ohp:{n:"啞鈴過頭推",eq:"啞鈴",u:"kg",cue:"站姿、肋骨往下收、核心收緊、屁股微夾。把啞鈴推到耳朵旁上方，不要塌腰往後仰。"},
+  hipthrust:{n:"臀推（上背靠登階板）",eq:"登階板 + 啞鈴",u:"kg",cue:"上背靠登階板，雙腳踩地。髖往上推到身體一直線、頂點夾臀 2 秒、下巴微收。可以把啞鈴放在髖上加重。"},
+  tm_incline:{n:"跑步機斜坡快走",eq:"跑步機",u:"min",cue:"坡度 6–8%，速度 5–6 km/h，「可以講話但唱不了歌」的強度。不要扶手。"},
+  tm_interval:{n:"跑步機間歇",eq:"跑步機",u:"min",cue:"1 分鐘快（快走或慢跑、坡度 3%）＋ 2 分鐘慢走，重複 5 回，共 15 分鐘。"},
+  sl_rdl:{n:"單腳羅馬尼亞硬舉",eq:"徒手 / 啞鈴",u:"reps",cue:"單腳站、另一腳往後伸，上身前傾到接近與地面平行，背部打直、骨盆不轉。可以手扶牆。飯店版的硬舉替代。"},
+  band_row:{n:"彈力繩划船",eq:"彈力繩",u:"reps",cue:"繩套在門把上或腳底，手肘往後拉到腰側、肩胛夾緊 1 秒。"},
+  band_ohp:{n:"彈力繩肩推",eq:"彈力繩",u:"reps",cue:"繩踩腳下，雙手握繩從肩膀推到頭頂上方；核心收緊不塌腰。"},
+  bw_squat:{n:"徒手深蹲",eq:"徒手",u:"reps",cue:"雙手前伸平衡，坐到大腿與地面平行，膝蓋朝腳尖；下放 3 秒。"},
+  sl_bridge:{n:"單腳臀橋",eq:"徒手",u:"reps",cue:"臀橋姿勢，一腳伸直離地，用另一腳把髖推到一直線、頂點停 2 秒。"},
+  stairs:{n:"爬樓梯間歇",eq:"樓梯",u:"min",cue:"快走上樓 1 分鐘、慢走下樓 1 分鐘，重複 5 回。飯店沒健身房時的心肺替代。"},
+};
+const WARM = {
+  A:[["catcow","1 × 8"],["deadbug","1 × 8／側"],["glutebridge","1 × 12"],["birddog","1 × 6／側"]],
+  B:[["catcow","1 × 8"],["pullapart","1 × 15"],["bw_squat","1 × 10"],["pushup","1 × 5（登階板上）"]],
+  C:[["catcow","1 × 8"],["glutebridge","1 × 12"],["deadbug","1 × 8／側"],["bw_squat","1 × 10"]],
+  M:[["catcow","1 × 8"]],
+};
+// role: main / sec follow the phase scheme; fixed exercises keep their own sets/reps. ps = per side.
+const SESS = {
+  A:{name:"A · 髖主導",desc:"下背與後側鏈：硬舉、負重行走",
+    full:[{id:"kb_dl",role:"main"},{id:"db_rdl",role:"sec"},{id:"stepup",role:"sec",ps:1},{id:"superman",sets:3,reps:"12（停 2 秒）"},{id:"suitcase",sets:3,reps:"30 秒／側",u:"kg"},{id:"band_gm",sets:2,reps:"15"}],
+    fullFin:[{id:"tm_incline",sets:1,reps:"10 分鐘"}],
+    short:[{id:"sl_rdl",sets:3,reps:"10／側"},{id:"band_gm",sets:3,reps:"15"},{id:"stepup",sets:3,reps:"10／側（用椅子或樓梯）",u:"reps"},{id:"superman",sets:3,reps:"12（停 2 秒）"},{id:"birddog",sets:3,reps:"8／側"}],
+    shortFin:[{id:"stairs",sets:1,reps:"5–10 分鐘（可省略）"}]},
+  B:{name:"B · 推拉核心",desc:"上半身與抗旋轉：划船、伏地挺身、帕洛夫推",
+    full:[{id:"goblet",role:"main"},{id:"db_row",role:"sec",ps:1},{id:"pushup",sets:3,reps:"8–12"},{id:"pallof",sets:3,reps:"10／側"},{id:"pullapart",sets:3,reps:"15"},{id:"sideplank",sets:3,reps:"20–30 秒／側"}],
+    fullFin:[{id:"farmer",sets:3,reps:"40 秒",u:"kg"}],
+    short:[{id:"pushup",sets:3,reps:"10"},{id:"band_row",sets:3,reps:"15"},{id:"pallof",sets:3,reps:"10／側"},{id:"pullapart",sets:3,reps:"15"},{id:"sideplank",sets:3,reps:"25 秒／側"}],
+    shortFin:[]},
+  C:{name:"C · 全身心肺",desc:"盪壺、分腿蹲、肩推與間歇",
+    full:[{id:"kb_swing",role:"main",alt0:"kb_dl"},{id:"split",role:"sec",ps:1},{id:"db_ohp",role:"sec"},{id:"hipthrust",sets:3,reps:"12（停 2 秒）"},{id:"birddog",sets:3,reps:"8／側（慢）"},{id:"deadbug",sets:3,reps:"10／側"}],
+    fullFin:[{id:"tm_interval",sets:1,reps:"15 分鐘"}],
+    short:[{id:"bw_squat",sets:3,reps:"15"},{id:"split",sets:3,reps:"10／側",u:"reps"},{id:"band_ohp",sets:3,reps:"15"},{id:"sl_bridge",sets:3,reps:"10／側"},{id:"deadbug",sets:3,reps:"10／側"}],
+    shortFin:[{id:"stairs",sets:1,reps:"10 分鐘（可省略）"}]},
+  M:{name:"微量 · 核心五式",desc:"10 分鐘保護下背、維持習慣",
+    micro:[{id:"birddog",sets:2,reps:"8／側"},{id:"deadbug",sets:2,reps:"8／側"},{id:"sideplank",sets:2,reps:"20 秒／側"},{id:"glutebridge",sets:2,reps:"12"},{id:"superman",sets:2,reps:"10（停 2 秒）"}]},
+};
+const PHASES = [
+  {name:"基礎期",main:[3,"12"],sec:[3,"12"],rpe:"6–7",focus:"學會髖屈伸，建立下背耐力，重量輕、速度慢"},
+  {name:"強化期",main:[3,"10"],sec:[3,"10"],rpe:"7–8",focus:"每次都試著比上次多 1 kg 或 1 下"},
+  {name:"力量期",main:[4,"6–8"],sec:[3,"8"],rpe:"8",focus:"重量較重、次數少，骨密度刺激最強"},
+];
+const ROT = ["A","B","C"];
+const SESSIONS_PER_PHASE = 12, DELOAD_FROM = 9;
+
+/* ========= STORAGE ========= */
+const KEY = "hst.v1";
+let DB = {settings:{name:"",birthYear:1981,heightCm:171,inc:1,travel:false},sessions:[],metrics:[]};
+function load(){ try{ const r=localStorage.getItem(KEY); if(r){ const o=JSON.parse(r); DB={...DB,...o,settings:{...DB.settings,...(o.settings||{})}}; } }catch(e){} }
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(DB)); }catch(e){ toast("無法寫入瀏覽器儲存空間，請匯出備份"); } }
+load();
+
+/* ========= HELPERS ========= */
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const pad=n=>String(n).padStart(2,"0");
+const fmtDate=d=>`${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const today=()=>fmtDate(new Date());
+const parseD=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d);};
+function mondayOf(d){const x=new Date(d);const w=(x.getDay()+6)%7;x.setDate(x.getDate()-w);x.setHours(0,0,0,0);return x;}
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;};
+const credit=s=>s.version==="micro"?0.5:1;
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),2200);}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+/* ========= PROGRESSION STATE ========= */
+function progression(){
+  const counted=DB.sessions.filter(s=>s.version!=="micro").sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id);
+  const n=counted.length;
+  const block=Math.floor(n/SESSIONS_PER_PHASE);
+  const inBlock=n%SESSIONS_PER_PHASE;
+  const phaseIdx=block===0?0:((block-1)%2)+1;
+  const deload=inBlock>=DELOAD_FROM;
+  const last=counted[counted.length-1];
+  const nextType=last?ROT[(ROT.indexOf(last.type)+1)%3]:"A";
+  return {n,block,inBlock,phaseIdx,phase:PHASES[phaseIdx],deload,nextType,round:Math.floor(block/2)+1};
+}
+function lastLog(exId){
+  const ss=[...DB.sessions].sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+  for(const s of ss){const e=(s.exercises||[]).find(x=>x.id===exId&&x.sets.some(t=>t.done));if(e)return {s,e};}
+  return null;
+}
+function suggest(exId,targetReps){
+  const l=lastLog(exId); if(!l) return null;
+  const done=l.e.sets.filter(t=>t.done);
+  const maxW=Math.max(...done.map(t=>+t.w||0));
+  const target=parseInt(String(targetReps),10);
+  const allHit=target?done.every(t=>(+t.r||0)>=target):true;
+  const rpe=l.e.rpe||0;
+  let text, w=maxW;
+  if(rpe&&rpe<=7&&allHit){w=maxW+(+DB.settings.inc||1);text=`上次 ${maxW} kg · RPE ${rpe}，建議加到 ${w} kg（壺鈴固定則每組 +1 下）`;}
+  else if(rpe>=9||!allHit){text=`上次 ${maxW} kg${rpe?` · RPE ${rpe}`:""}，${allHit?"":"次數未達標，"}維持或減 10%`;}
+  else text=`上次 ${maxW} kg${rpe?` · RPE ${rpe}`:""}，維持`;
+  return {w,text,date:l.s.date};
+}
+
+/* ========= TODAY TAB ========= */
+let cur={type:"A",version:"full",back:null,feel:null};
+function scheme(item,p){
+  if(item.role){const sc=p.phase[item.role];let sets=sc[0];if(p.deload)sets=Math.max(2,sets-1);return {sets,reps:sc[1]+(item.ps?"／側":""),rpe:p.deload?"6":p.phase.rpe};}
+  return {sets:item.sets,reps:item.reps,rpe:null};
+}
+function renderToday(){
+  const p=progression();
+  const s=DB.settings;
+  $("#title").textContent=(s.name?s.name+" 的":"")+"下背強化訓練系統";
+  const age=new Date().getFullYear()-(+s.birthYear||1981);
+  $("#subtitle").textContent=`${age} 歲 · ${s.heightCm||171} cm · 第 ${p.round} 輪`;
+  $("#travelPill").hidden=!s.travel;
+  $("#phaseEyebrow").textContent=`第 ${p.phaseIdx+1} 階段 · ${p.phase.name}${p.deload?" · 減量堂":""}`;
+  $("#phaseCount").textContent=`本階段 ${p.inBlock}/${SESSIONS_PER_PHASE} 堂`;
+  $("#phaseFill").style.width=(p.inBlock/SESSIONS_PER_PHASE*100)+"%";
+  if(!$("#sessDate").value) $("#sessDate").value=today();
+  // version segs
+  const vs=[["full","完整版","45 分 · 全部器材"],["short","飯店版","25 分 · 彈力繩＋徒手"],["micro","微量版","10 分 · 核心五式"]];
+  $("#versionSegs").innerHTML=vs.map(v=>`<button data-v="${v[0]}" aria-pressed="${cur.version===v[0]}">${v[1]}<small>${v[2]}</small></button>`).join("");
+  const type=cur.version==="micro"?"M":cur.type;
+  const S=SESS[type];
+  $("#nextTitle").innerHTML=`<span class="pill ${type}">${type==="M"?"微量":type}</span> ${esc(S.name.replace(/^[ABC] · /,""))}`;
+  $("#nextDesc").textContent=type==="M"?S.desc:`${S.desc} · ${p.phase.focus}`;
+  $("#btnPrevType").hidden=cur.version==="micro";
+  // warm
+  $("#warmList").innerHTML=WARM[type].map(([id,rx])=>`<li><span>${esc(EX[id].n)}</span><span class="num muted">${esc(rx)}</span></li>`).join("");
+  // main list
+  const items=cur.version==="micro"?S.micro:(cur.version==="full"?S.full:S.short);
+  const fins=cur.version==="micro"?[]:(cur.version==="full"?S.fullFin:S.shortFin);
+  $("#mainHeading").textContent=cur.version==="micro"?"核心五式":"主課表"+(p.deload?"（減量：組數 −1、RPE 6）":"");
+  $("#exList").innerHTML=items.map((it,i)=>exHTML(it,i,p)).join("");
+  $("#finCard").hidden=fins.length===0;
+  $("#finList").innerHTML=fins.map((it,i)=>exHTML(it,100+i,p)).join("");
+  // scales
+  $("#backScale").innerHTML=[0,1,2,3,4,5,6,7,8,9,10].map(v=>`<button class="small" data-back="${v}" aria-pressed="${cur.back===v}">${v}</button>`).join("");
+  $("#feelScale").innerHTML=[["1","很累"],["2","偏累"],["3","一般"],["4","不錯"],["5","很好"]].map(([v,l])=>`<button class="small" data-feel="${v}" aria-pressed="${cur.feel===+v}" style="width:auto;padding:4px 10px">${l}</button>`).join("");
+}
+function exHTML(it,i,p){
+  let id=it.id; if(it.alt0&&p.phaseIdx===0) id=it.alt0;
+  const ex=EX[id]; const sc=scheme(it,p); const unit=it.u||ex.u;
+  const sug=unit==="kg"?suggest(id,sc.reps):null;
+  const targetR=parseInt(String(sc.reps),10)||"";
+  const isTime=/秒|分鐘/.test(sc.reps)||unit==="min"||unit==="sec";
+  const rLabel=unit==="min"?"分鐘":(isTime?"秒":"次數");
+  const rDefault=unit==="min"?(parseInt(sc.reps,10)||""):(isTime?(parseInt(sc.reps,10)||""):targetR);
+  const rows=[];
+  for(let k=0;k<sc.sets;k++){
+    rows.push(`<div class="set"><span class="k">${k+1}</span>
+      ${unit==="kg"?`<input type="number" step="0.5" inputmode="decimal" placeholder="kg" value="${sug?sug.w:""}" data-w aria-label="第${k+1}組重量">`:`<span class="k">${esc(ex.eq)}</span>`}
+      <input type="number" inputmode="numeric" placeholder="${rLabel}" value="${rDefault}" data-r aria-label="第${k+1}組${rLabel}">
+      <button class="done" data-done aria-pressed="false" aria-label="完成第${k+1}組">✓</button></div>`);
+  }
+  const rpeBtns=sc.rpe!==null?`<div class="rpe">RPE ${[6,7,8,9,10].map(v=>`<button class="small" data-rpe="${v}" aria-pressed="false">${v}</button>`).join("")}<small>目標 ${sc.rpe}</small></div>`:"";
+  return `<div class="ex" data-ex="${id}" data-role="${it.role||""}">
+    <div class="head"><button class="ghost" style="border:0;padding:0;text-align:left;min-height:0" data-toggle><span class="name">${esc(ex.n)}</span> <small class="muted">${esc(ex.eq)}</small></button>
+      <span class="rx num">${sc.sets} × ${esc(sc.reps)}</span></div>
+    <div class="cue">${esc(ex.cue)}</div>
+    ${sug?`<div class="note">${esc(sug.text)} <span class="muted num">（${sug.date}）</span></div>`:(unit==="kg"?`<div class="muted" style="font-size:13px">第一次：選一個能穩穩做完所有組、最後 2 下有點吃力的重量。</div>`:"")}
+    <div class="sethead"><span>組</span><span>${unit==="kg"?"重量 kg":"器材"}</span><span>${rLabel}</span><span>完成</span></div>
+    <div class="sets">${rows.join("")}</div>
+    ${rpeBtns}
+  </div>`;
+}
+function collectSession(){
+  const exs=$$("#exList .ex, #finList .ex").map(el=>{
+    const sets=[...el.querySelectorAll(".set")].map(r=>({w:r.querySelector("[data-w]")?+r.querySelector("[data-w]").value||0:null,r:+r.querySelector("[data-r]").value||0,done:r.querySelector("[data-done]").getAttribute("aria-pressed")==="true"}));
+    const rpeEl=el.querySelector("[data-rpe][aria-pressed='true']");
+    return {id:el.dataset.ex,role:el.dataset.role||null,sets,rpe:rpeEl?+rpeEl.dataset.rpe:null};
+  });
+  const doneAny=exs.some(e=>e.sets.some(s=>s.done));
+  if(!doneAny){toast("至少勾選一組完成再儲存");return null;}
+  const p=progression();
+  return {id:Date.now(),date:$("#sessDate").value||today(),type:cur.version==="micro"?"M":cur.type,version:cur.version,phase:p.phaseIdx,deload:p.deload,exercises:exs,back:cur.back,feel:cur.feel,notes:$("#notes").value.trim()};
+}
+function resetTodayForm(){
+  const p=progression(); cur={type:p.nextType,version:DB.settings.travel?"short":"full",back:null,feel:null};
+  $("#notes").value=""; $("#sessDate").value=today(); renderToday();
+}
+
+/* ========= HISTORY TAB ========= */
+let liftSel="kb_dl";
+function weekKey(dateStr){return fmtDate(mondayOf(parseD(dateStr)));}
+function weekCredits(){const m={};for(const s of DB.sessions){const k=weekKey(s.date);m[k]=(m[k]||0)+credit(s);}return m;}
+function renderHistory(){
+  const goal=DB.settings.travel?2:3;
+  const wc=weekCredits(); const thisMon=mondayOf(new Date()); const tk=fmtDate(thisMon);
+  $("#weekRange").textContent=`${tk.slice(5)} – ${fmtDate(addDays(thisMon,6)).slice(5)}`;
+  $("#tWeek").textContent=`${(wc[tk]||0).toString().replace(".5","½")}/${goal}`;
+  let streak=0;for(let i=1;;i++){const k=fmtDate(addDays(thisMon,-7*i));if((wc[k]||0)>=3)streak++;else break;if(i>520)break;}
+  if((wc[tk]||0)>=goal)streak++;
+  $("#tStreak").textContent=streak;
+  $("#tTotal").textContent=DB.sessions.filter(s=>s.version!=="micro").length;
+  // heat
+  const byDay={};for(const s of DB.sessions){byDay[s.date]=Math.max(byDay[s.date]||0,s.version==="micro"?1:(s.version==="short"?2:3));}
+  const start=addDays(thisMon,-7*11); let h="";
+  for(let w=0;w<12;w++){h+='<div class="wk">';for(let d=0;d<7;d++){const dt=addDays(start,w*7+d);const k=fmtDate(dt);const lv=byDay[k]||0;h+=`<div class="d ${lv?"l"+lv:""} ${k===today()?"today":""}" title="${k}${lv?" · 已訓練":""}"></div>`;}h+="</div>";}
+  $("#heat").innerHTML=h; $("#heatFrom").textContent=fmtDate(start).slice(5);
+  // weekly chart
+  const weeks=[];for(let i=11;i>=0;i--){const k=fmtDate(addDays(thisMon,-7*i));weeks.push({k,v:wc[k]||0});}
+  drawBars($("#chartWeek"),weeks,goal);
+  // lift chart
+  const liftIds=["kb_dl","db_rdl","goblet","db_row","kb_swing","db_ohp","stepup","split","suitcase","farmer","hipthrust"];
+  $("#liftSel").innerHTML=liftIds.map(id=>`<option value="${id}" ${id===liftSel?"selected":""}>${esc(EX[id].n)}</option>`).join("");
+  const pts=[];for(const s of [...DB.sessions].sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id)){const e=(s.exercises||[]).find(x=>x.id===liftSel);if(!e)continue;const ws=e.sets.filter(t=>t.done&&t.w>0).map(t=>t.w);if(ws.length)pts.push({k:s.date,v:Math.max(...ws),rpe:e.rpe});}
+  drawLine($("#chartLift"),pts.slice(-20));
+  // metrics
+  const ms=[...DB.metrics].sort((a,b)=>b.date.localeCompare(a.date));
+  $("#metricTable").innerHTML=ms.length?`<thead><tr><th>日期</th><th class="num">體重</th><th class="num">腰圍</th><th class="num">下背</th><th></th></tr></thead><tbody>${ms.slice(0,12).map(m=>`<tr><td class="num">${m.date}</td><td class="num">${m.weight??"—"}</td><td class="num">${m.waist??"—"}</td><td class="num">${m.back??"—"}</td><td><button class="small ghost" data-delm="${m.id}">刪</button></td></tr>`).join("")}</tbody>`:`<tbody><tr><td class="muted">尚無數據。建議每週固定一天早上空腹量一次。</td></tr></tbody>`;
+  if(!$("#mDate").value)$("#mDate").value=today();
+  // list
+  const ss=[...DB.sessions].sort((a,b)=>b.date.localeCompare(a.date)||b.id-a.id);
+  $("#histList").innerHTML=ss.length?ss.slice(0,40).map(s=>{
+    const done=s.exercises.filter(e=>e.sets.some(t=>t.done));
+    const top=done.filter(e=>e.sets.some(t=>t.w)).map(e=>`${EX[e.id]?EX[e.id].n:e.id} ${Math.max(...e.sets.filter(t=>t.done).map(t=>t.w||0))}kg`).slice(0,3).join(" · ");
+    const vlabel={full:"完整",short:"飯店",micro:"微量"}[s.version];
+    return `<div class="hitem"><span class="pill ${s.type}">${s.type==="M"?"微量":s.type}</span><div><div class="d">${s.date} · ${vlabel}版${s.deload?" · 減量":""}${s.back!=null?` · 下背 ${s.back}`:""}</div><div class="s">${esc(top||done.map(e=>EX[e.id]?EX[e.id].n:e.id).slice(0,3).join(" · "))}${s.notes?` — ${esc(s.notes)}`:""}</div></div><button class="ghost" data-del="${s.id}">刪除</button></div>`;
+  }).join(""):`<p class="muted">還沒有紀錄。到「今天」完成第一堂 A 堂吧。</p>`;
+}
+function drawBars(svg,data,goal){
+  const W=640,H=200,L=34,R=12,T=16,B=30;const max=Math.max(4,goal+1,...data.map(d=>d.v));
+  const y=v=>T+(H-T-B)*(1-v/max);const bw=(W-L-R)/data.length;
+  let s="";for(let g=0;g<=max;g++){if(g%1===0)s+=`<line class="grid" x1="${L}" x2="${W-R}" y1="${y(g)}" y2="${y(g)}"/><text x="${L-8}" y="${y(g)+4}" text-anchor="end">${g}</text>`;}
+  s+=`<line class="goal" x1="${L}" x2="${W-R}" y1="${y(goal)}" y2="${y(goal)}"/>`;
+  data.forEach((d,i)=>{const x=L+i*bw+bw*0.2,w=bw*0.6,top=y(d.v),h=Math.max(0,y(0)-top);
+    s+=`<rect class="bar ${d.v<goal?"low":""}" x="${x}" y="${top}" width="${w}" height="${h}" rx="3" data-tip="${d.k} 週 · ${d.v} 堂"><title>${d.k} · ${d.v} 堂</title></rect>`;
+    if(d.v>0)s+=`<text class="lbl" x="${x+w/2}" y="${top-4}" text-anchor="middle">${String(d.v).replace(".5","½")}</text>`;
+    if(i%2===0||i===data.length-1)s+=`<text x="${x+w/2}" y="${H-10}" text-anchor="middle">${d.k.slice(5)}</text>`;});
+  svg.innerHTML=s;
+}
+function drawLine(svg,pts){
+  const W=640,H=220,L=40,R=16,T=16,B=30;
+  if(pts.length<1){svg.innerHTML=`<text x="${W/2}" y="${H/2}" text-anchor="middle">這個動作還沒有重量紀錄</text>`;return;}
+  const vals=pts.map(p=>p.v);let lo=Math.min(...vals),hi=Math.max(...vals);if(hi===lo){lo=Math.max(0,lo-2);hi=hi+2;}const padV=(hi-lo)*0.15;lo=Math.max(0,Math.floor(lo-padV));hi=Math.ceil(hi+padV);
+  const x=i=>pts.length===1?W/2:L+(W-L-R)*i/(pts.length-1);const y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+  let s="";const steps=4;for(let g=0;g<=steps;g++){const v=lo+(hi-lo)*g/steps;s+=`<line class="grid" x1="${L}" x2="${W-R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L-8}" y="${y(v)+4}" text-anchor="end">${Math.round(v*10)/10}</text>`;}
+  s+=`<path class="ln" d="${pts.map((p,i)=>(i?"L":"M")+x(i)+" "+y(p.v)).join(" ")}"/>`;
+  pts.forEach((p,i)=>{s+=`<circle class="dot" cx="${x(i)}" cy="${y(p.v)}" r="5" data-tip="${p.k} · ${p.v} kg${p.rpe?" · RPE "+p.rpe:""}"><title>${p.k} · ${p.v} kg</title></circle>`;});
+  const last=pts[pts.length-1];s+=`<text class="lbl" x="${Math.min(x(pts.length-1),W-R-30)}" y="${y(last.v)-10}" text-anchor="middle">${last.v} kg</text>`;
+  s+=`<text x="${L}" y="${H-10}">${pts[0].k}</text><text x="${W-R}" y="${H-10}" text-anchor="end">${last.k}</text>`;
+  svg.innerHTML=s;
+}
+
+/* ========= GUIDE TAB ========= */
+function renderGuide(){
+  const used=new Set();for(const t of ["A","B","C"]){for(const k of ["full","short","fullFin","shortFin"])(SESS[t][k]||[]).forEach(i=>{used.add(i.id);if(i.alt0)used.add(i.alt0);});WARM[t].forEach(w=>used.add(w[0]));}
+  SESS.M.micro.forEach(i=>used.add(i.id));
+  $("#exLib").innerHTML=[...used].map(id=>`<details><summary>${esc(EX[id].n)} <small class="muted" style="font-weight:400">${esc(EX[id].eq)}</small></summary><div class="body">${esc(EX[id].cue)}</div></details>`).join("");
+}
+
+/* ========= SETTINGS TAB ========= */
+function renderSettings(){const s=DB.settings;$("#sName").value=s.name||"";$("#sYear").value=s.birthYear||"";$("#sHeight").value=s.heightCm||"";$("#sInc").value=s.inc||1;setTravelBtn(s.travel);}
+function setTravelBtn(on){const b=$("#sTravel");b.setAttribute("aria-pressed",on?"true":"false");b.textContent=on?"開啟（週目標 2 堂）":"關閉";}
+
+/* ========= EVENTS ========= */
+function showTab(name){$$("nav.tabs [role=tab]").forEach(b=>b.setAttribute("aria-selected",b.dataset.tab===name));["today","history","guide","settings"].forEach(t=>$("#tab-"+t).hidden=t!==name);
+  if(name==="history")renderHistory();if(name==="guide")renderGuide();if(name==="settings")renderSettings();window.scrollTo({top:0});}
+$$("nav.tabs [role=tab]").forEach(b=>b.addEventListener("click",()=>showTab(b.dataset.tab)));
+
+$("#tab-today").addEventListener("click",e=>{
+  const t=e.target.closest("button");if(!t)return;
+  if(t.dataset.v){cur.version=t.dataset.v;renderToday();return;}
+  if(t.id==="btnPrevType"){cur.type=ROT[(ROT.indexOf(cur.type)+1)%3];renderToday();return;}
+  if(t.dataset.done!==undefined){t.setAttribute("aria-pressed",t.getAttribute("aria-pressed")==="true"?"false":"true");return;}
+  if(t.dataset.toggle!==undefined){t.closest(".ex").classList.toggle("open");return;}
+  if(t.dataset.rpe){const box=t.closest(".rpe");box.querySelectorAll("[data-rpe]").forEach(b=>b.setAttribute("aria-pressed",b===t?"true":"false"));return;}
+  if(t.dataset.back!==undefined){cur.back=+t.dataset.back;$$("#backScale button").forEach(b=>b.setAttribute("aria-pressed",b===t));return;}
+  if(t.dataset.feel){cur.feel=+t.dataset.feel;$$("#feelScale button").forEach(b=>b.setAttribute("aria-pressed",b===t));return;}
+  if(t.dataset.timer){startTimer(+t.dataset.timer);return;}
+  if(t.id==="btnSave"){const s=collectSession();if(!s)return;DB.sessions.push(s);save();toast(`已儲存 ${s.type==="M"?"微量":s.type+" 堂"} · 下一堂 ${ROT[(ROT.indexOf(cur.type)+(cur.version==="micro"?0:1))%3]}`);resetTodayForm();showTab("history");}
+});
+let timerT=null;
+function startTimer(sec){clearInterval(timerT);let left=sec;const d=$("#timerDisp");const tick=()=>{d.textContent=`${Math.floor(left/60)}:${pad(left%60)}`;if(left<=0){clearInterval(timerT);d.textContent="GO";if(navigator.vibrate)try{navigator.vibrate([200,100,200]);}catch(e){}return;}left--;};tick();timerT=setInterval(tick,1000);}
+
+$("#tab-history").addEventListener("click",e=>{
+  const t=e.target.closest("button");if(!t)return;
+  if(t.dataset.del){if(t.dataset.confirm){DB.sessions=DB.sessions.filter(s=>String(s.id)!==t.dataset.del);save();renderHistory();toast("已刪除");}else{t.dataset.confirm="1";t.textContent="確定刪除？";t.classList.add("danger");setTimeout(()=>{delete t.dataset.confirm;t.textContent="刪除";t.classList.remove("danger");},2500);}return;}
+  if(t.dataset.delm){DB.metrics=DB.metrics.filter(m=>String(m.id)!==t.dataset.delm);save();renderHistory();return;}
+  if(t.id==="btnMetric"){const w=parseFloat($("#mWeight").value),wa=parseFloat($("#mWaist").value),b=parseFloat($("#mBack").value);if(isNaN(w)&&isNaN(wa)&&isNaN(b)){toast("請至少填一個數字");return;}
+    DB.metrics.push({id:Date.now(),date:$("#mDate").value||today(),weight:isNaN(w)?null:w,waist:isNaN(wa)?null:wa,back:isNaN(b)?null:b});save();$("#mWeight").value="";$("#mWaist").value="";$("#mBack").value="";renderHistory();toast("已記錄");}
+});
+$("#liftSel").addEventListener("change",e=>{liftSel=e.target.value;renderHistory();});
+// chart tooltips
+const tip=document.createElement("div");tip.className="tip";tip.hidden=true;document.body.appendChild(tip);
+document.addEventListener("pointermove",e=>{const el=e.target.closest&&e.target.closest("[data-tip]");if(el){tip.textContent=el.dataset.tip;tip.hidden=false;tip.style.left=e.clientX+"px";tip.style.top=e.clientY+"px";}else tip.hidden=true;});
+
+$("#tab-settings").addEventListener("click",e=>{
+  const t=e.target.closest("button");if(!t)return;
+  if(t.id==="sTravel"){setTravelBtn(t.getAttribute("aria-pressed")!=="true");return;}
+  if(t.id==="btnSaveSettings"){DB.settings={name:$("#sName").value.trim(),birthYear:+$("#sYear").value||1981,heightCm:+$("#sHeight").value||171,inc:+$("#sInc").value||1,travel:$("#sTravel").getAttribute("aria-pressed")==="true"};save();toast("設定已儲存");resetTodayForm();return;}
+  if(t.id==="btnExport"){const txt=JSON.stringify(DB,null,0);$("#ioText").value=txt;const a=$("#dlLink");try{a.href="data:application/json;charset=utf-8,"+encodeURIComponent(txt);a.hidden=false;}catch(err){}toast("備份已產生，請複製保存");return;}
+  if(t.id==="btnCopy"){const v=$("#ioText").value;if(!v){toast("先按「產生備份文字」");return;}navigator.clipboard?.writeText(v).then(()=>toast("已複製")).catch(()=>{$("#ioText").select();toast("請手動長按複製");});return;}
+  if(t.id==="btnImport"){importText($("#ioText").value);return;}
+  if(t.id==="btnReset"){if(t.dataset.confirm){DB.sessions=[];DB.metrics=[];save();delete t.dataset.confirm;t.textContent="刪除所有紀錄";toast("已清除");resetTodayForm();}else{t.dataset.confirm="1";t.textContent="再按一次確認刪除";t.classList.add("danger");setTimeout(()=>{delete t.dataset.confirm;t.textContent="刪除所有紀錄";t.classList.remove("danger");},3000);}}
+});
+$("#fileImport").addEventListener("change",e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>importText(String(r.result));r.readAsText(f);});
+function importText(txt){try{const o=JSON.parse(txt);if(!o||!Array.isArray(o.sessions))throw 0;const ids=new Set(DB.sessions.map(s=>s.id));let n=0;for(const s of o.sessions){if(!ids.has(s.id)){DB.sessions.push(s);n++;}}
+  const mids=new Set(DB.metrics.map(m=>m.id));for(const m of (o.metrics||[])){if(!mids.has(m.id))DB.metrics.push(m);}if(o.settings)DB.settings={...DB.settings,...o.settings};save();toast(`匯入完成，新增 ${n} 堂`);resetTodayForm();renderSettings();}catch(e){toast("格式不正確，請貼上完整的備份內容");}}
+
+/* ========= INIT ========= */
+resetTodayForm();
+</script>
+
+</body>
+</html>
