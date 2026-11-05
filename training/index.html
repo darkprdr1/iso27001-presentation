@@ -582,15 +582,25 @@ let DB = {settings:{name:"",birthYear:1981,heightCm:171,inc:1,travel:false,video
 const EMBED_VIDEO = true; // true = 內嵌 YouTube 播放器（自架版）；false = 以按鈕開新分頁
 function load(){ try{ const r=localStorage.getItem(KEY); if(r){ const o=JSON.parse(r); DB={...DB,...o,settings:{...DB.settings,...(o.settings||{}),videos:{...(o.settings&&o.settings.videos||{})}}}; } }catch(e){} }
 let storageOK=true;
-function save(){ try{ localStorage.setItem(KEY,JSON.stringify(DB)); }catch(e){ storageOK=false; updateStorageNote(); } }
+/* Second local copy in IndexedDB: some phone browsers clear one store but not the other. */
+function idbOpen(){return new Promise((res,rej)=>{try{const r=indexedDB.open("hst",1);r.onupgradeneeded=()=>r.result.createObjectStore("kv");r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error);}catch(e){rej(e);}});}
+function idbSet(v){return idbOpen().then(d=>new Promise((res,rej)=>{const t=d.transaction("kv","readwrite");t.objectStore("kv").put(v,KEY);t.oncomplete=res;t.onerror=()=>rej(t.error);})).catch(()=>{});}
+function idbGet(){return idbOpen().then(d=>new Promise((res,rej)=>{const t=d.transaction("kv","readonly");const q=t.objectStore("kv").get(KEY);q.onsuccess=()=>res(q.result||null);q.onerror=()=>rej(q.error);})).catch(()=>null);}
+function save(){ const txt=JSON.stringify(DB); try{ localStorage.setItem(KEY,txt); }catch(e){ storageOK=false; updateStorageNote(); } idbSet(txt); }
 load();
 try{localStorage.setItem(KEY+".probe","1");localStorage.removeItem(KEY+".probe");}catch(e){storageOK=false;}
+try{ if(navigator.storage&&navigator.storage.persist) navigator.storage.persist().catch(()=>{}); }catch(e){}
+async function restoreFromIdb(){
+  if(DB.sessions.length||DB.metrics.length) return false;
+  const txt=await idbGet(); if(!txt) return false;
+  try{ const o=JSON.parse(txt); if(!o||!Array.isArray(o.sessions)) return false; DB={...DB,...o,settings:{...DB.settings,...(o.settings||{}),videos:{...((o.settings||{}).videos||{})}}}; save(); return true; }catch(e){ return false; }
+}
 
 /* ========= CLOUD STORE (claude.ai db capability; falls back to this device) ========= */
 let STORE=null, STORE_STATE="checking", CAN_WRITE=null;
 const clone=o=>JSON.parse(JSON.stringify(o));
 async function dbWrite(fn,obj){
-  if(!STORE){ if(obj){obj._unsynced=true;save();updateStorageNote();} return false; }
+  if(!STORE){ if(obj&&STORE_STATE!=="local"){obj._unsynced=true;save();updateStorageNote();} return false; }
   try{ await fn(); if(obj&&obj._unsynced){delete obj._unsynced;} return true; }
   catch(e){ const c=e&&e.code; if(obj)obj._unsynced=true; if(c==="invalid_argument"){CAN_WRITE=false;} updateStorageNote(); toast(c==="quota_exceeded"?"雲端空間已滿，請刪除舊紀錄":"⚠ 雲端儲存失敗，只存在此裝置"); return false; }
 }
@@ -630,7 +640,7 @@ async function initStore(){
 function updateStorageNote(){
   const n=$("#storageNote"), w=$("#storageWarn"); if(!n)return;
   let txt="", warn="";
-  const pending=DB.sessions.filter(x=>x._unsynced).length+DB.metrics.filter(x=>x._unsynced).length+(DB.settings._unsynced?1:0);
+  const pending=STORE_STATE==="local"?0:DB.sessions.filter(x=>x._unsynced).length+DB.metrics.filter(x=>x._unsynced).length+(DB.settings._unsynced?1:0);
   const HOWTO="請在這支手機用「頁面擁有者」的 claude.ai 帳號登入後再開啟，紀錄才會存到雲端。";
   if(STORE_STATE==="cloud"){
     txt=CAN_WRITE===false?"你目前對這個頁面只有檢視權限，紀錄只會存在這台裝置，換手機或清除資料就會消失。"+HOWTO:"資料存在 claude.ai 的雲端資料庫，同一個帳號在任何裝置打開都會同步。這台裝置也保留一份離線副本。";
@@ -638,7 +648,7 @@ function updateStorageNote(){
   } else if(STORE_STATE==="noaccess"){ txt="無法使用雲端儲存（尚未登入 claude.ai，或帳號沒有權限）。紀錄只會存在這台裝置。"+HOWTO; warn="⚠ 尚未連上雲端儲存：這台裝置的紀錄不會同步，可能遺失。"+HOWTO; }
   else if(STORE_STATE==="cloud-error"){ txt="雲端暫時連不上，資料先存在這台裝置，下次連上會自動補傳。"; }
   else if(STORE_STATE==="checking"){ txt="正在確認儲存位置⋯"; }
-  else { txt="資料只存在這台裝置的瀏覽器。換手機或清除瀏覽資料前，請匯出備份。"+(location.protocol==="file:"?" 注意：直接開啟檔案時，部分手機瀏覽器（尤其 iPhone）會在關閉後清除資料，建議放到 GitHub Pages 之類的網址開啟。":""); }
+  else { txt="資料存在這台裝置的瀏覽器（兩份本機備援）。建議用 Safari / Chrome 開啟並「加到主畫面」，資料最不容易被清掉；換手機前請匯出備份。"+(location.protocol==="file:"?" 注意：直接開啟檔案時，部分手機瀏覽器（尤其 iPhone）會在關閉後清除資料，建議放到 GitHub Pages 之類的網址開啟。":""); }
   if(pending&&!warn) warn=`⚠ 有 ${pending} 筆資料還沒同步到雲端（只存在這台裝置）。連上雲端後會自動補傳，或到「設定」按「重新同步」。`;
   if(!storageOK&&STORE_STATE!=="cloud") warn="⚠ 此瀏覽器無法保存資料（可能是無痕模式、從檔案直接開啟或封鎖了網站資料）。關閉頁面後紀錄會消失，請改用雲端版或正常視窗開啟。";
   n.textContent=txt+(pending?`（${pending} 筆待同步）`:""); w.textContent=warn; w.hidden=!warn;
@@ -938,7 +948,7 @@ function importText(txt){try{const o=JSON.parse(txt);if(!o||!Array.isArray(o.ses
 /* ========= INIT ========= */
 resetTodayForm();
 updateStorageNote();
-initStore();
+restoreFromIdb().then(r=>{ if(r){ rerender(); toast("已從備援儲存還原紀錄"); } }).finally(()=>initStore());
 </script>
 
 </body>
