@@ -147,6 +147,7 @@ details .body ul{padding-left:18px;margin:6px 0}
 .kv dd{margin:0}
 .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:700;z-index:40;opacity:0;transition:opacity .2s;pointer-events:none}
 .toast.show{opacity:1}
+.toast.warn{background:var(--bad);color:#fff}
 .danger{color:var(--bad)}
 .note{background:var(--accent-soft);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--ink)}
 .note.danger{background:color-mix(in srgb,var(--bad) 14%,var(--surface));color:var(--ink)}
@@ -431,6 +432,7 @@ details .body ul{padding-left:18px;margin:6px 0}
     <div class="card">
       <h2>備份與同步</h2>
       <p class="muted" style="font-size:13px" id="storageNote">正在確認儲存位置⋯</p>
+      <div style="margin-bottom:10px"><button id="btnResync" hidden>重新同步到雲端</button></div>
       <div class="row">
         <button id="btnExport">產生備份文字</button>
         <button id="btnCopy">複製</button>
@@ -588,9 +590,9 @@ try{localStorage.setItem(KEY+".probe","1");localStorage.removeItem(KEY+".probe")
 let STORE=null, STORE_STATE="checking", CAN_WRITE=null;
 const clone=o=>JSON.parse(JSON.stringify(o));
 async function dbWrite(fn,obj){
-  if(!STORE){ if(obj){obj._unsynced=true;} return false; }
+  if(!STORE){ if(obj){obj._unsynced=true;save();updateStorageNote();} return false; }
   try{ await fn(); if(obj&&obj._unsynced){delete obj._unsynced;} return true; }
-  catch(e){ const c=e&&e.code; if(obj)obj._unsynced=true; if(c==="invalid_argument"){CAN_WRITE=false;updateStorageNote();} toast(c==="quota_exceeded"?"雲端空間已滿，請刪除舊紀錄":"雲端儲存失敗，資料暫存在此裝置"); return false; }
+  catch(e){ const c=e&&e.code; if(obj)obj._unsynced=true; if(c==="invalid_argument"){CAN_WRITE=false;} updateStorageNote(); toast(c==="quota_exceeded"?"雲端空間已滿，請刪除舊紀錄":"⚠ 雲端儲存失敗，只存在此裝置"); return false; }
 }
 const persist={
   settings(){ return dbWrite(()=>STORE.doc("app/settings").set(clone(DB.settings)),DB.settings); },
@@ -603,7 +605,7 @@ async function initStore(){
   if(!(window.claude&&typeof window.claude.use==="function")){STORE_STATE="local";updateStorageNote();return;}
   let db=null,user=null;
   try{[db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);}catch(e){}
-  if(!db){STORE_STATE="local";updateStorageNote();return;}
+  if(!db){STORE_STATE="noaccess";updateStorageNote();return;}
   try{ if(user){const w=await user.can("data.write");CAN_WRITE=(w===null||w===undefined)?null:!!w;} }catch(e){}
   try{
     const [sd,ss,ms]=await Promise.all([db.doc("app/settings").get(),db.collection("sessions").limit(1000).get(),db.collection("metrics").limit(1000).get()]);
@@ -628,13 +630,19 @@ async function initStore(){
 function updateStorageNote(){
   const n=$("#storageNote"), w=$("#storageWarn"); if(!n)return;
   let txt="", warn="";
+  const pending=DB.sessions.filter(x=>x._unsynced).length+DB.metrics.filter(x=>x._unsynced).length+(DB.settings._unsynced?1:0);
+  const HOWTO="請在這支手機用「頁面擁有者」的 claude.ai 帳號登入後再開啟，紀錄才會存到雲端。";
   if(STORE_STATE==="cloud"){
-    txt=CAN_WRITE===false?"你目前只有檢視權限：紀錄只會存在這台裝置。請由擁有者在分享選單把你加為可編輯，資料才會存到雲端。":"資料存在 claude.ai 的雲端資料庫，同一個帳號在任何裝置打開都會同步。這台裝置也保留一份離線副本。";
-  } else if(STORE_STATE==="cloud-error"){ txt="雲端暫時連不上，資料先存在這台裝置，下次連上會自動補傳。"; }
+    txt=CAN_WRITE===false?"你目前對這個頁面只有檢視權限，紀錄只會存在這台裝置，換手機或清除資料就會消失。"+HOWTO:"資料存在 claude.ai 的雲端資料庫，同一個帳號在任何裝置打開都會同步。這台裝置也保留一份離線副本。";
+    if(CAN_WRITE===false) warn="⚠ 沒有雲端寫入權限：這台裝置的紀錄不會同步，可能遺失。"+HOWTO;
+  } else if(STORE_STATE==="noaccess"){ txt="無法使用雲端儲存（尚未登入 claude.ai，或帳號沒有權限）。紀錄只會存在這台裝置。"+HOWTO; warn="⚠ 尚未連上雲端儲存：這台裝置的紀錄不會同步，可能遺失。"+HOWTO; }
+  else if(STORE_STATE==="cloud-error"){ txt="雲端暫時連不上，資料先存在這台裝置，下次連上會自動補傳。"; }
   else if(STORE_STATE==="checking"){ txt="正在確認儲存位置⋯"; }
   else { txt="資料只存在這台裝置的瀏覽器。換手機或清除瀏覽資料前，請匯出備份。"+(location.protocol==="file:"?" 注意：直接開啟檔案時，部分手機瀏覽器（尤其 iPhone）會在關閉後清除資料，建議放到 GitHub Pages 之類的網址開啟。":""); }
+  if(pending&&!warn) warn=`⚠ 有 ${pending} 筆資料還沒同步到雲端（只存在這台裝置）。連上雲端後會自動補傳，或到「設定」按「重新同步」。`;
   if(!storageOK&&STORE_STATE!=="cloud") warn="⚠ 此瀏覽器無法保存資料（可能是無痕模式、從檔案直接開啟或封鎖了網站資料）。關閉頁面後紀錄會消失，請改用雲端版或正常視窗開啟。";
-  n.textContent=txt; w.textContent=warn; w.hidden=!warn;
+  n.textContent=txt+(pending?`（${pending} 筆待同步）`:""); w.textContent=warn; w.hidden=!warn;
+  const rs=$("#btnResync"); if(rs) rs.hidden=!(pending&&STORE);
 }
 function rerender(){
   const started=$$("#exList [data-done][aria-pressed='true']").length>0;
@@ -652,7 +660,7 @@ const parseD=s=>{const [y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d)
 function mondayOf(d){const x=new Date(d);const w=(x.getDay()+6)%7;x.setDate(x.getDate()-w);x.setHours(0,0,0,0);return x;}
 const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x;};
 const credit=s=>s.version==="micro"?0.5:1;
-function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),2200);}
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.toggle("warn",m.startsWith("⚠"));t.classList.add("show");clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove("show"),m.startsWith("⚠")?5000:2200);}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function ytId(u){const m=String(u).match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/);return m?m[1]:null;}
 function userVideo(id){const v=(DB.settings.videos||{})[id];return v&&/^https?:\/\//i.test(v)?v:null;}
@@ -833,7 +841,7 @@ function renderHistory(){
   $("#histList").innerHTML=ss.length?ss.slice(0,40).map(s=>{
     const done=s.exercises.filter(e=>e.sets.some(t=>t.done));
     const top=done.filter(e=>e.sets.some(t=>t.w)).map(e=>`${EX[e.id]?EX[e.id].n:e.id} ${Math.max(...e.sets.filter(t=>t.done).map(t=>t.w||0))}kg`).slice(0,3).join(" · ");
-    const vlabel={full:"完整",short:"飯店",micro:"微量"}[s.version];const pr=(s.prs||[]).length?" 🏆":"";
+    const vlabel={full:"完整",short:"飯店",micro:"微量"}[s.version];const pr=((s.prs||[]).length?" 🏆":"")+(s._unsynced?' <span class="danger">未同步</span>':"");
     return `<div class="hitem"><span class="pill ${s.type}">${s.type==="M"?"微量":s.type}</span><div><div class="d">${s.date} · ${vlabel}版${s.deload?" · 減量":""}${s.back!=null?` · 下背 ${s.back}`:""}${pr}</div><div class="s">${esc(top||done.map(e=>EX[e.id]?EX[e.id].n:e.id).slice(0,3).join(" · "))}${s.bonus?` · 加碼：${esc(s.bonus)}`:""}${s.notes?` — ${esc(s.notes)}`:""}</div></div><button class="ghost" data-del="${s.id}">刪除</button></div>`;
   }).join(""):`<p class="muted">還沒有紀錄。到「今天」完成第一堂 A 堂吧。</p>`;
 }
@@ -891,7 +899,7 @@ $("#tab-today").addEventListener("click",e=>{
   if(t.dataset.back!==undefined){cur.back=+t.dataset.back;$$("#backScale button").forEach(b=>b.setAttribute("aria-pressed",b===t));return;}
   if(t.dataset.feel){cur.feel=+t.dataset.feel;$$("#feelScale button").forEach(b=>b.setAttribute("aria-pressed",b===t));return;}
   if(t.dataset.timer){startTimer(+t.dataset.timer);return;}
-  if(t.id==="btnSave"){const s=collectSession();if(!s)return;DB.sessions.push(s);save();persist.session(s);toast(s.prs.length?`🏆 新紀錄！${s.prs.map(x=>EX[x.id].n+" "+x.w+" kg").join("、")}`:`已儲存 ${s.type==="M"?"微量":s.type+" 堂"} · 下一堂 ${ROT[(ROT.indexOf(cur.type)+(cur.version==="micro"?0:1))%ROT.length]}`);resetTodayForm();showTab("history");}
+  if(t.id==="btnSave"){const s=collectSession();if(!s)return;DB.sessions.push(s);save();persist.session(s);const synced=!!STORE&&CAN_WRITE!==false;toast(!synced?"⚠ 已存在此裝置，但沒有同步到雲端，請看頁面上方說明":(s.prs.length?`🏆 新紀錄！${s.prs.map(x=>EX[x.id].n+" "+x.w+" kg").join("、")}`:`已儲存 ${s.type==="M"?"微量":s.type+" 堂"} · 下一堂 ${ROT[(ROT.indexOf(cur.type)+(cur.version==="micro"?0:1))%ROT.length]}`));resetTodayForm();showTab("history");}
 });
 let timerT=null;
 function startTimer(sec){clearInterval(timerT);let left=sec;const d=$("#timerDisp");const tick=()=>{d.textContent=`${Math.floor(left/60)}:${pad(left%60)}`;if(left<=0){clearInterval(timerT);d.textContent="GO";if(navigator.vibrate)try{navigator.vibrate([200,100,200]);}catch(e){}return;}left--;};tick();timerT=setInterval(tick,1000);}
@@ -916,6 +924,7 @@ $("#tab-guide").addEventListener("click",e=>{
 $("#tab-settings").addEventListener("click",e=>{
   const t=e.target.closest("button");if(!t)return;
   if(t.id==="sTravel"){setTravelBtn(t.getAttribute("aria-pressed")!=="true");return;}
+  if(t.id==="btnResync"){(async()=>{let ok=0,fail=0;if(DB.settings._unsynced){(await persist.settings())?ok++:fail++;}for(const x of DB.sessions.filter(y=>y._unsynced)){(await persist.session(x))?ok++:fail++;}for(const m of DB.metrics.filter(y=>y._unsynced)){(await persist.metric(m))?ok++:fail++;}save();updateStorageNote();toast(fail?`同步完成 ${ok} 筆，失敗 ${fail} 筆`:`已同步 ${ok} 筆`);})();return;}
   if(t.id==="btnSaveSettings"){DB.settings={...DB.settings,name:$("#sName").value.trim(),birthYear:+$("#sYear").value||1981,heightCm:+$("#sHeight").value||171,inc:+$("#sInc").value||1,travel:$("#sTravel").getAttribute("aria-pressed")==="true"};save();persist.settings();toast("設定已儲存");resetTodayForm();return;}
   if(t.id==="btnExport"){const txt=JSON.stringify(DB,null,0);$("#ioText").value=txt;toast("備份已產生，請複製保存");return;}
   if(t.id==="btnCopy"){const v=$("#ioText").value;if(!v){toast("先按「產生備份文字」");return;}navigator.clipboard?.writeText(v).then(()=>toast("已複製")).catch(()=>{$("#ioText").select();toast("請手動長按複製");});return;}
