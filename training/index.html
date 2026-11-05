@@ -277,6 +277,8 @@ details .body ul{padding-left:18px;margin:6px 0}
         <div class="tile"><div class="v num" id="tTotal">0</div><div class="l">累計堂數</div></div>
       </div>
       <p class="muted" style="font-size:13px;margin-top:8px">完整版 / 飯店版算 1 堂，10 分鐘微量版算 0.5 堂。一週達 3 堂即達標。總噸數 = 每組重量 × 次數的加總。</p>
+      <p class="muted num" style="font-size:13px;margin:6px 0 0" id="ctxLine"></p>
+      <div class="note" id="ctxHint" hidden style="margin-top:8px"></div>
     </div>
 
     <div class="card">
@@ -653,8 +655,27 @@ function updateStorageNote(){
   else { txt="資料存在這台裝置的瀏覽器（兩份本機備援）。建議用 Safari / Chrome 開啟並「加到主畫面」，資料最不容易被清掉；換手機前請匯出備份。"+(location.protocol==="file:"?" 注意：直接開啟檔案時，部分手機瀏覽器（尤其 iPhone）會在關閉後清除資料，建議放到 GitHub Pages 之類的網址開啟。":""); }
   if(pending&&!warn) warn=`⚠ 有 ${pending} 筆資料還沒同步到雲端（只存在這台裝置）。連上雲端後會自動補傳，或到「設定」按「重新同步」。`;
   if(!storageOK&&STORE_STATE!=="cloud") warn="⚠ 此瀏覽器無法保存資料（可能是無痕模式、從檔案直接開啟或封鎖了網站資料）。關閉頁面後紀錄會消失，請改用雲端版或正常視窗開啟。";
-  n.textContent=txt+(pending?`（${pending} 筆待同步）`:""); w.textContent=warn; w.hidden=!warn;
+  n.textContent=`開啟方式：${openContext()}。`+txt+(pending?`（${pending} 筆待同步）`:""); w.textContent=warn; w.hidden=!warn;
   const rs=$("#btnResync"); if(rs) rs.hidden=!(pending&&STORE);
+}
+function openContext(){
+  const ua=navigator.userAgent||"";
+  if(/\bLine\//i.test(ua)) return "LINE 內建瀏覽器";
+  if(/FBAN|FBAV|Instagram|MicroMessenger/i.test(ua)) return "App 內建瀏覽器";
+  if(navigator.standalone===true||(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches)) return "主畫面 App";
+  if(window.claude&&typeof window.claude.use==="function") return "claude.ai";
+  if(location.protocol==="file:") return "直接開啟檔案";
+  return /CriOS/.test(ua)?"Chrome 瀏覽器":(/Safari/.test(ua)&&!/Chrome/.test(ua)?"Safari 瀏覽器":"瀏覽器");
+}
+function renderContext(){
+  const l=$("#ctxLine"),h=$("#ctxHint"); if(!l)return;
+  const ctx=openContext(), n=DB.sessions.length;
+  l.textContent=`開啟方式：${ctx} · 這裡有 ${n} 筆紀錄`;
+  const cloud=STORE_STATE==="cloud"&&CAN_WRITE!==false;
+  let hint="";
+  if(n===0&&!cloud) hint=`找不到之前的紀錄？手機上「Safari」「主畫面 App」「LINE 內建瀏覽器」各自存各自的資料，在哪裡存的就只在哪裡看得到。請用當初存紀錄的那個方式開啟，到「設定」按「分享備份」傳給自己，再回到這裡「匯入」。之後固定用同一種方式開啟。`;
+  else if(/內建瀏覽器/.test(ctx)) hint="你正在用 App 內建瀏覽器開啟，這種瀏覽器常常不保留資料。請改用 Safari 或 Chrome 開啟並加到主畫面，然後固定用它。";
+  h.textContent=hint; h.hidden=!hint;
 }
 function rerender(){
   const started=$$("#exList [data-done][aria-pressed='true']").length>0;
@@ -845,6 +866,7 @@ function renderHistory(){
   const pts=[];for(const s of [...DB.sessions].sort((a,b)=>a.date.localeCompare(b.date)||a.id-b.id)){const e=(s.exercises||[]).find(x=>x.id===liftSel);if(!e)continue;const ws=e.sets.filter(t=>t.done&&t.w>0).map(t=>t.w);if(ws.length)pts.push({k:s.date,v:Math.max(...ws),rpe:e.rpe});}
   drawLine($("#chartLift"),pts.slice(-20));
   // metrics
+  renderContext();
   const ms=[...DB.metrics].sort((a,b)=>b.date.localeCompare(a.date));
   $("#metricTable").innerHTML=ms.length?`<thead><tr><th>日期</th><th class="num">體重</th><th class="num">腰圍</th><th class="num">下背</th><th></th></tr></thead><tbody>${ms.slice(0,12).map(m=>`<tr><td class="num">${m.date}</td><td class="num">${m.weight??"—"}</td><td class="num">${m.waist??"—"}</td><td class="num">${m.back??"—"}</td><td><button class="small ghost" data-delm="${m.id}">刪</button></td></tr>`).join("")}</tbody>`:`<tbody><tr><td class="muted">尚無數據。建議每週固定一天早上空腹量一次。</td></tr></tbody>`;
   if(!$("#mDate").value)$("#mDate").value=today();
