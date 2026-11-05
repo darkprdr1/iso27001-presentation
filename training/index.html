@@ -432,8 +432,10 @@ details .body ul{padding-left:18px;margin:6px 0}
     <div class="card">
       <h2>備份與同步</h2>
       <p class="muted" style="font-size:13px" id="storageNote">正在確認儲存位置⋯</p>
+      <p class="muted" style="font-size:13px">要讓家人看到你的紀錄：按「分享備份」用 LINE 傳給對方，對方在自己的頁面按「匯入（合併）」選取檔案即可。重複匯入不會重複計算。</p>
       <div style="margin-bottom:10px"><button id="btnResync" hidden>重新同步到雲端</button></div>
       <div class="row">
+        <button class="primary" id="btnShare" hidden>分享備份給家人（LINE 等）</button>
         <button id="btnExport">產生備份文字</button>
         <button id="btnCopy">複製</button>
       </div>
@@ -888,7 +890,7 @@ function renderGuide(){
 }
 
 /* ========= SETTINGS TAB ========= */
-function renderSettings(){updateStorageNote();const s=DB.settings;$("#sName").value=s.name||"";$("#sYear").value=s.birthYear||"";$("#sHeight").value=s.heightCm||"";$("#sInc").value=s.inc||1;setTravelBtn(s.travel);}
+function renderSettings(){updateStorageNote();const sh=$("#btnShare");if(sh)sh.hidden=!(navigator.share&&!(window.claude&&typeof window.claude.use==="function"));const s=DB.settings;$("#sName").value=s.name||"";$("#sYear").value=s.birthYear||"";$("#sHeight").value=s.heightCm||"";$("#sInc").value=s.inc||1;setTravelBtn(s.travel);}
 function setTravelBtn(on){const b=$("#sTravel");b.setAttribute("aria-pressed",on?"true":"false");b.textContent=on?"開啟（週目標 2 堂）":"關閉";}
 
 /* ========= EVENTS ========= */
@@ -936,6 +938,11 @@ $("#tab-settings").addEventListener("click",e=>{
   if(t.id==="sTravel"){setTravelBtn(t.getAttribute("aria-pressed")!=="true");return;}
   if(t.id==="btnResync"){(async()=>{let ok=0,fail=0;if(DB.settings._unsynced){(await persist.settings())?ok++:fail++;}for(const x of DB.sessions.filter(y=>y._unsynced)){(await persist.session(x))?ok++:fail++;}for(const m of DB.metrics.filter(y=>y._unsynced)){(await persist.metric(m))?ok++:fail++;}save();updateStorageNote();toast(fail?`同步完成 ${ok} 筆，失敗 ${fail} 筆`:`已同步 ${ok} 筆`);})();return;}
   if(t.id==="btnSaveSettings"){DB.settings={...DB.settings,name:$("#sName").value.trim(),birthYear:+$("#sYear").value||1981,heightCm:+$("#sHeight").value||171,inc:+$("#sInc").value||1,travel:$("#sTravel").getAttribute("aria-pressed")==="true"};save();persist.settings();toast("設定已儲存");resetTodayForm();return;}
+  if(t.id==="btnShare"){(async()=>{const txt=JSON.stringify(DB);const name=`training-backup-${today()}.json`;try{
+      const f=new File([txt],name,{type:"application/json"});
+      if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:"訓練紀錄備份"});toast("已分享");return;}
+      await navigator.share({title:"訓練紀錄備份",text:txt});toast("已分享");
+    }catch(e){ if(e&&e.name==="AbortError")return; $("#ioText").value=txt; toast("這個瀏覽器無法直接分享，請複製下方文字"); }})();return;}
   if(t.id==="btnExport"){const txt=JSON.stringify(DB,null,0);$("#ioText").value=txt;toast("備份已產生，請複製保存");return;}
   if(t.id==="btnCopy"){const v=$("#ioText").value;if(!v){toast("先按「產生備份文字」");return;}navigator.clipboard?.writeText(v).then(()=>toast("已複製")).catch(()=>{$("#ioText").select();toast("請手動長按複製");});return;}
   if(t.id==="btnImport"){importText($("#ioText").value);return;}
